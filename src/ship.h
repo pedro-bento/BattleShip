@@ -3,8 +3,8 @@
 
 #include <stdlib.h>
 
-#include "../math/vec2.h"
-#include "../math/math.h"
+#include "math/vec2.h"
+#include "math/math.h"
 
 #define STATE_GOOD  'O'
 #define STATE_HIT   '@'

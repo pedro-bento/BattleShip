@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#include "world/world.h"
+#include "game.h"
 
 /*
   Functions, conventions:
@@ -18,40 +18,26 @@
 
 int main(int argc, char* const argv[])
 {
-  int isRandom = 1;
-  int opt;
-  while((opt = getopt(argc, argv, ":m:r")) != -1)
+  Game game;
+  game_init(&game);
+
+  game_player_init_manual(&game, PLAYER1);
+  game_player_init_random(&game, PLAYER2);
+
+  while(game.state == PLAYING)
   {
-    switch(opt)
-    {
-      case 'm': isRandom = 0; break;
-      case 'r': isRandom = 1; break;
-    }
+    game_player_shoot(&game, PLAYER1);
+    game_player_shoot(&game, PLAYER2);
   }
 
-  World world;
-  world_init(&world);
+  game_print(&game);
 
-  if(isRandom)
-    world_player_place_ships_random(&world, PLAYER1);
-  else
-    world_player_place_ships(&world, PLAYER1);
-  world_player_place_ships_random(&world, PLAYER2);
-
-  while(world.game_state == PLAYING)
-  {
-    world_player_shoot(&world, PLAYER1);
-    world_player_shoot(&world, PLAYER2);
-  }
-
-  world_print(&world);
-
-  if(world.game_state == PLAYER1_WIN)
+  if(game.state == PLAYER1_WIN)
     printf("\nPLAYER 1 WON!\n");
   else
     printf("\nPLAYER 2 WON!\n");
 
-  world_free(&world);
+  game_free(&game);
 
   return 0;
 }
