@@ -3,11 +3,12 @@
 
 #include <stdlib.h>
 
-#include "math/vec2.h"
-#include "math/math.h"
+#include "../math/vec2.h"
+#include "../math/math.h"
 
 #define STATE_GOOD  'O'
 #define STATE_HIT   '@'
+#define STATE_NULL  '\0'
 
 typedef struct
 {
@@ -25,7 +26,7 @@ void ship_free(Ship* ship);
 
 // returns 1 if all states are STATE_HIT, otherwise 0
 int ship_is_over(Ship* ship);
-// returns a (char) STATE if contains the point, otherwise '\0'
+// returns a (char) STATE_GOOD or STATE_HIT if contains the point, otherwise STATE_EMPTY
 char ship_contains(Ship* ship, Vec2 point);
 // register and returns 1 if hit, otherwise 0
 int ship_reg(Ship* ship, Vec2 point);

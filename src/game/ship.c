@@ -53,7 +53,7 @@ char ship_contains(Ship* ship, Vec2 point)
     else return ship->states[point.x - lower_x];
   }
 
-  return '\0';
+  return STATE_NULL;
 }
 
 int ship_reg(Ship* ship, Vec2 point)

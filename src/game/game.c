@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 
-#include "math/vec2.h"
+#include "../math/vec2.h"
 
 void game_init(Game* game)
 {
@@ -11,6 +11,7 @@ void game_init(Game* game)
   for(size_t i = 0; i < NUM_OF_SHIPS; i++)
     game->player2[i] = NULL;
   game->state = PLAYING;
+  game->current_player = PLAYER1;
 }
 
 void game_free(Game* game)
@@ -23,12 +24,17 @@ void game_free(Game* game)
       ship_free(game->player1[i]);
 }
 
+void game_swap_current_player(Game* game)
+{
+  game->current_player = game->current_player == PLAYER1 ? PLAYER2 : PLAYER1;
+}
+
 Ship** game_get_player_ships(Game* game, Player player)
 {
   return player == PLAYER1 ? game->player1 : game->player2;
 }
 
-int game_is_valid_ship(Game* game, Ship* ship, Player player)
+int game_is_valid_ship(Game* game, Ship* ship)
 {
   Vec2 p1 = ship->front;
   Vec2 p2 = ship->back;
@@ -37,7 +43,7 @@ int game_is_valid_ship(Game* game, Ship* ship, Player player)
      p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
      return 0;
 
-  Ship** pships = game_get_player_ships(game, player);
+  Ship** pships = game_get_player_ships(game, game->current_player);
   for(size_t i = 0; i < NUM_OF_SHIPS; ++i)
     if(pships[i] != NULL)
       if(ship_intersect(ship, pships[i]))
@@ -46,13 +52,13 @@ int game_is_valid_ship(Game* game, Ship* ship, Player player)
   return 1;
 }
 
-void game_place_ship(Game* game, Player player, int length, int id)
+void game_place_ship(Game* game, int length, int id)
 {
   Vec2 front, orientation;
   char buffer[8];
   short isSuccess = 0;
   Ship* ship = ship_alloc(length);
-  Ship** pships = game_get_player_ships(game, player);
+  Ship** pships = game_get_player_ships(game, game->current_player);
 
   while(!isSuccess)
   {
@@ -71,7 +77,7 @@ void game_place_ship(Game* game, Player player, int length, int id)
     ship->front = front;
     ship->back = add(ship->front, scalar(orientation, length));
 
-    if(game_is_valid_ship(game, ship, player))
+    if(game_is_valid_ship(game, ship))
     {
       pships[id] = ship;
       isSuccess = 1;
@@ -81,10 +87,10 @@ void game_place_ship(Game* game, Player player, int length, int id)
   }
 }
 
-void game_player_init_manual(Game* game, Player player)
+void game_player_init_manual_console(Game* game)
 {
-  const int ship_length[NUM_OF_SHIPS] = {5, 4, 3, 3, 2};
-  const char* ship_name[NUM_OF_SHIPS] = {"Carrier: 00000", "BattleShip: 0000",
+  const int ship_length[5] = {5, 4, 3, 3, 2};
+  const char* ship_name[5] = {"Carrier: 00000", "BattleShip: 0000",
     "Destroyer: 000", "Submarine: 000", "Patrol Boat: 00"};
 
   printf("To place a ship type: x y orientation\n\
@@ -94,16 +100,27 @@ example: 2 3 right\n");
 
   for(size_t i = 0; i < NUM_OF_SHIPS; i++)
   {
-      game_player_print(game, player);
-      printf("Place %s\n", ship_name[i]);
-      game_place_ship(game, player, ship_length[i], i);
+      game_player_print(game, game->current_player);
+      printf("Place %s\n", ship_name[i % 5]);
+      game_place_ship(game, ship_length[i % 5], i);
   }
 
-  game_player_print(game, player);
+  game_player_print(game, game->current_player);
+}
+
+int game_player_add_ship(Game* game, Ship* ship, size_t id)
+{
+  Ship** pships = game_get_player_ships(game, game->current_player);
+  if(game_is_valid_ship(game, ship))
+  {
+    pships[id] = ship;
+    return 1;
+  }
+  return 0;
 }
 
 // Probably time can be improved
-Ship* game_create_random_ship(Game* game, Player player, int length)
+Ship* game_create_random_ship(Game* game, int length)
 {
   Ship* ship = ship_alloc(length);
   do{
@@ -111,19 +128,16 @@ Ship* game_create_random_ship(Game* game, Player player, int length)
     size_t num_rots = rdn_range(0, 4);
     for(size_t i = 0; i < num_rots; ++i)
       ship_rotate_counterclockwise(ship);
-  }while(!game_is_valid_ship(game, ship, player));
+  }while(!game_is_valid_ship(game, ship));
   return ship;
 }
 
-void game_player_init_random(Game* game, Player player)
+void game_player_init_random(Game* game)
 {
-  Ship** pships = game_get_player_ships(game, player);
-
-  pships[0] = game_create_random_ship(game, player, 5);
-  pships[1] = game_create_random_ship(game, player, 4);
-  pships[2] = game_create_random_ship(game, player, 3);
-  pships[3] = game_create_random_ship(game, player, 3);
-  pships[4] = game_create_random_ship(game, player, 2);
+  const int ship_length[5] = {5, 4, 3, 3, 2};
+  Ship** pships = game_get_player_ships(game, game->current_player);
+  for(size_t i = 0; i < NUM_OF_SHIPS; i++)
+    pships[i] = game_create_random_ship(game, ship_length[i % 5]);
 }
 
 int game_reg_shot(Game* game, Player player, Vec2 shot)
@@ -146,12 +160,12 @@ int game_player_is_over(Game* game, Player player)
   return 1;
 }
 
-void game_player_shoot(Game* game, Player player)
+void game_player_shoot_console(Game* game)
 {
   Vec2 shot;
   Player opp;
 
-  if(player == PLAYER1){
+  if(game->current_player == PLAYER1){
     opp = PLAYER2;
     game_player_print_hits(game, opp);
     printf("\nPLAYER 1 shoot :> ");
@@ -165,17 +179,28 @@ void game_player_shoot(Game* game, Player player)
   if(game_reg_shot(game, opp, shot) == 1){
     printf("HIT!\n");
     if(game_player_is_over(game, opp)){
-      if(player == PLAYER1) game->state = PLAYER1_WIN;
+      if(game->current_player == PLAYER1) game->state = PLAYER1_WIN;
       else game->state = PLAYER2_WIN;
     }
   }else{
     printf("MISS!\n");
   }
-
 }
 
-char game_player_get_cell(Ship** pships, Vec2 p)
+void game_player_shoot_gui(Game* game, Vec2 shot)
 {
+  Player opp = game->current_player == PLAYER1 ? PLAYER2 : PLAYER1;
+  if(game_reg_shot(game, opp, shot) == 1){
+    if(game_player_is_over(game, opp)){
+      if(game->current_player == PLAYER1) game->state = PLAYER1_WIN;
+      else game->state = PLAYER2_WIN;
+    }
+  }
+}
+
+char game_player_get_cell(Game* game, Player player, Vec2 p)
+{
+  Ship** pships = game_get_player_ships(game, player);
   char ch;
   for(size_t i = 0; i < NUM_OF_SHIPS; ++i)
     if(pships[i] != NULL)
@@ -186,8 +211,6 @@ char game_player_get_cell(Ship** pships, Vec2 p)
 
 void game_player_to_string(Game* game, Player player, char* str)
 {
-  Ship** pships = game_get_player_ships(game, player);
-
   size_t index = 0;
   str[index++] = ' ';
   for(int i = 0; i < MAP_LENGTH; ++i)
@@ -202,7 +225,7 @@ void game_player_to_string(Game* game, Player player, char* str)
     str[index++] = x + '0';
     for(int y = 0; y < MAP_LENGTH; ++y)
     {
-      str[index++] = game_player_get_cell(pships, vec2(x, y));
+      str[index++] = game_player_get_cell(game, player, vec2(x, y));
       if(y != MAP_LENGTH - 1) str[index++] = ' ';
     }
 
