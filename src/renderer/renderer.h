@@ -8,6 +8,7 @@
 #include "../game/ship.h"
 
 #define SCREEN_WIDTH 600
+#define FOOTER_HEIGHT (SCREEN_WIDTH/10)
 #define CELL_WIDTH (SCREEN_WIDTH / MAP_LENGTH)
 
 // renders current player board (grid and ships)

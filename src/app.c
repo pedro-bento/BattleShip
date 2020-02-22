@@ -16,13 +16,15 @@ int app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
 void app_playing_game_state(Game* game, SDL_Renderer* renderer);
 Vec2 app_playing_game_state_handle_events(Game* game, SDL_Keycode key, Vec2 shot);
 
+int shouldQuit = 0;
+
 void app_run()
 {
   Game game;
   game_init(&game);
 
   SDL_Init(SDL_INIT_VIDEO);
-  SDL_Window* window = SDL_CreateWindow("BattleShip", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_WIDTH, SDL_WINDOW_SHOWN);
+  SDL_Window* window = SDL_CreateWindow("BattleShip", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_WIDTH + FOOTER_HEIGHT, SDL_WINDOW_SHOWN);
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
   app_player_init(&game, renderer);
@@ -46,7 +48,7 @@ void app_run()
 void app_player_init(Game* game, SDL_Renderer* renderer)
 {
   const int ship_length[5] = {5, 4, 3, 3, 2};
-  int count = 0, shouldQuit = 0;
+  int count = 0;
   Ship* ship = game_create_random_ship(game, ship_length[count]);
 
   SDL_Event e;
@@ -61,12 +63,11 @@ void app_player_init(Game* game, SDL_Renderer* renderer)
             count++;
             ship = game_create_random_ship(game, ship_length[count % 5]);
           }
-        }else if(e.type == SDL_QUIT){
-          shouldQuit = 1;
         }
+      }else if(e.type == SDL_QUIT){
+        shouldQuit = 1;
       }
     }
-
     // render and draw
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -101,20 +102,28 @@ int app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship)
       Vec2 prev_front = ship->front;
       Vec2 prev_back = ship->back;
       ship_rotate_counterclockwise(ship);
-      if(game_is_valid_ship(game, ship))
-        break;
-      ship->front = prev_front;
-      ship->back = prev_back;
+      Vec2 p1 = ship->front;
+      Vec2 p2 = ship->back;
+      if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
+         p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+      {
+        ship->front = prev_front;
+        ship->back = prev_back;
+      }
     } break;
 
     case SDLK_e: {
       Vec2 prev_front = ship->front;
       Vec2 prev_back = ship->back;
       ship_rotate_clockwise(ship);
-      if(game_is_valid_ship(game, ship))
-        break;
-      ship->front = prev_front;
-      ship->back = prev_back;
+      Vec2 p1 = ship->front;
+      Vec2 p2 = ship->back;
+      if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
+         p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+      {
+        ship->front = prev_front;
+        ship->back = prev_back;
+      }
     } break;
 
     case SDLK_RETURN: return 1;
@@ -124,7 +133,6 @@ int app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship)
 
 void app_playing_game_state(Game* game, SDL_Renderer* renderer)
 {
-  int shouldQuit = 0;
   Vec2 shot = vec2(MAP_LENGTH/2,MAP_LENGTH/2);
 
   SDL_Event e;

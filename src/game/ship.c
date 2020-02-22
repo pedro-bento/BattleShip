@@ -38,15 +38,6 @@ char ship_contains(Ship* ship, Vec2 point)
   int lower_y = MIN(ship->front.y, ship->back.y);
   int upper_y = MAX(ship->front.y, ship->back.y);
 
-  // when orientation is fliped
-  if(ship->front.y == ship->back.y && ship->front.x > ship->back.x){
-    lower_x++;
-    upper_x++;
-  }else if(ship->front.x == ship->back.x && ship->front.y > ship->back.y){
-    lower_y++;
-    upper_y++;
-  }
-
   if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y)
   {
     if(lower_x == upper_x) return ship->states[point.y - lower_y];
@@ -62,15 +53,6 @@ int ship_reg(Ship* ship, Vec2 point)
   int upper_x = MAX(ship->front.x, ship->back.x);
   int lower_y = MIN(ship->front.y, ship->back.y);
   int upper_y = MAX(ship->front.y, ship->back.y);
-
-  // when orientation is fliped
-  if(ship->front.y == ship->back.y && ship->front.x > ship->back.x){
-    lower_x++;
-    upper_x++;
-  }else if(ship->front.x == ship->back.x && ship->front.y > ship->back.y){
-    lower_y++;
-    upper_y++;
-  }
 
   if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y)
   {
@@ -96,11 +78,11 @@ int ship_reg(Ship* ship, Vec2 point)
 
 int ship_intersect(Ship* ship1, Ship* ship2)
 {
-  Vec2 p1 = ship1->front;
-  Vec2 p2 = ship1->back;
+  Vec2 p1 = vec2(MIN(ship1->front.x, ship1->back.x), MIN(ship1->front.y, ship1->back.y));
+  Vec2 p2 = vec2(MAX(ship1->front.x, ship1->back.x), MAX(ship1->front.y, ship1->back.y));
 
-  Vec2 q1 = ship2->front;
-  Vec2 q2 = ship2->back;
+  Vec2 q1 = vec2(MIN(ship2->front.x, ship2->back.x), MIN(ship2->front.y, ship2->back.y));
+  Vec2 q2 = vec2(MAX(ship2->front.x, ship2->back.x), MAX(ship2->front.y, ship2->back.y));
 
   return (p1.y >= q1.y && p1.y <= q2.y && p1.x <= q1.x && p2.x >= q1.x) ||
          (p1.y <= q1.y && p2.y >= q1.y && p1.x >= q1.x && p1.x <= q2.x);
@@ -120,18 +102,18 @@ void ship_rotate90(Ship* ship, float sg)
   ship->back.y -= ship->front.y;
 
   int nx = ship->back.y * sg;
-  int ny = ship->back.x * sg;
+  int ny = ship->back.x * -sg;
 
-  ship->back.x = (int)nx + ship->front.x;
-  ship->back.y = (int)ny + ship->front.y;
+  ship->back.x = nx + ship->front.x;
+  ship->back.y = ny + ship->front.y;
 }
 
 void ship_rotate_counterclockwise(Ship* ship)
 {
-  ship_rotate90(ship, 1);
+  ship_rotate90(ship, -1);
 }
 
 void ship_rotate_clockwise(Ship* ship)
 {
-  ship_rotate90(ship, -1);
+  ship_rotate90(ship, 1);
 }
