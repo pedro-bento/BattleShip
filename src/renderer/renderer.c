@@ -76,3 +76,61 @@ void render_shot(SDL_Renderer* renderer, Vec2 shot)
     .w = CELL_WIDTH, .h = CELL_WIDTH};
   SDL_RenderFillRect(renderer, &rect);
 }
+
+void render_all(SDL_Renderer* renderer, Game* game)
+{
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  for (int i = 1; i <= MAP_LENGTH; ++i)
+  {
+     SDL_RenderDrawLine(renderer, i * CELL_WIDTH/2, 0, i * CELL_WIDTH/2, SCREEN_WIDTH/2);
+     SDL_RenderDrawLine(renderer, 0, i * CELL_WIDTH/2, SCREEN_WIDTH/2, i * CELL_WIDTH/2);
+   }
+   SDL_RenderDrawLine(renderer, 0, MAP_LENGTH * CELL_WIDTH/2, SCREEN_WIDTH/2, MAP_LENGTH * CELL_WIDTH/2);
+
+   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+   for (int i = 0; i < MAP_LENGTH; ++i)
+   {
+      SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2 + i * CELL_WIDTH/2, SCREEN_WIDTH/2,
+        SCREEN_WIDTH/2 + i * CELL_WIDTH/2, SCREEN_WIDTH);
+      SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2, SCREEN_WIDTH/2 + i * CELL_WIDTH/2,
+        SCREEN_WIDTH, SCREEN_WIDTH/2 + i * CELL_WIDTH/2);
+    }
+    SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2, SCREEN_WIDTH/2 + MAP_LENGTH * CELL_WIDTH/2,
+      SCREEN_WIDTH, SCREEN_WIDTH/2 + MAP_LENGTH * CELL_WIDTH/2);
+
+    Player player = PLAYER1;
+    for(int x = 0; x < MAP_LENGTH; ++x)
+    {
+      for(int y = 0; y < MAP_LENGTH; ++y)
+      {
+        char state = game_player_get_cell(game, player, vec2(y,x));
+        if(state == STATE_GOOD){
+          SDL_SetRenderDrawColor(renderer, ship_good.r, ship_good.g, ship_good.b, 255);
+          SDL_Rect rect = { .x = x * CELL_WIDTH/2, .y = y * CELL_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
+          SDL_RenderFillRect(renderer, &rect);
+        }else if(state == STATE_HIT){
+          SDL_SetRenderDrawColor(renderer, ship_hit.r, ship_hit.g, ship_hit.b, 255);
+          SDL_Rect rect = { .x = x * CELL_WIDTH/2, .y = y * CELL_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
+          SDL_RenderFillRect(renderer, &rect);
+        }
+      }
+    }
+
+    player = PLAYER2;
+    for(int x = 0; x < MAP_LENGTH; ++x)
+    {
+      for(int y = 0; y < MAP_LENGTH; ++y)
+      {
+        char state = game_player_get_cell(game, player, vec2(y,x));
+        if(state == STATE_GOOD){
+          SDL_SetRenderDrawColor(renderer, ship_good.r, ship_good.g, ship_good.b, 255);
+          SDL_Rect rect = { .x = x * CELL_WIDTH/2 + SCREEN_WIDTH/2, .y = y * CELL_WIDTH/2 + SCREEN_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
+          SDL_RenderFillRect(renderer, &rect);
+        }else if(state == STATE_HIT){
+          SDL_SetRenderDrawColor(renderer, ship_hit.r, ship_hit.g, ship_hit.b, 255);
+          SDL_Rect rect = { .x = x * CELL_WIDTH/2 + SCREEN_WIDTH/2, .y = y * CELL_WIDTH/2 + SCREEN_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
+          SDL_RenderFillRect(renderer, &rect);
+        }
+      }
+    }
+}

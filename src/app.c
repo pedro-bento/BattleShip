@@ -7,14 +7,19 @@
 #include "renderer/renderer.h"
 #include "math/vec2.h"
 
-Vec2 move_vec2(Vec2 vec, Vec2 dxy);
+typedef void (*Rotate_func)(Ship* ship);
+
+Vec2 move_shot(Vec2 vec, Vec2 dxy);
 void move_ship(Game* game, Ship* ship, Vec2 dxy);
+void rotate_ship(Game* game, Ship* ship, Rotate_func func);
 
 void app_player_init(Game* game, SDL_Renderer* renderer);
-int app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
+int  app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
 
 void app_playing_game_state(Game* game, SDL_Renderer* renderer);
 Vec2 app_playing_game_state_handle_events(Game* game, SDL_Keycode key, Vec2 shot);
+
+void app_final_game_state(Game* game, SDL_Renderer* renderer);
 
 int shouldQuit = 0;
 
@@ -33,7 +38,7 @@ void app_run()
 
   app_playing_game_state(&game, renderer);
 
-  game_print(&game);
+  app_final_game_state(&game, renderer);
 
   if(game.state == PLAYER1_WIN) printf("\nPLAYER 1 WON!\n");
   else printf("\nPLAYER 2 WON!\n");
@@ -99,31 +104,11 @@ int app_player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship)
     } break;
 
     case SDLK_q: {
-      Vec2 prev_front = ship->front;
-      Vec2 prev_back = ship->back;
-      ship_rotate_counterclockwise(ship);
-      Vec2 p1 = ship->front;
-      Vec2 p2 = ship->back;
-      if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
-         p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
-      {
-        ship->front = prev_front;
-        ship->back = prev_back;
-      }
+      rotate_ship(game, ship, &ship_rotate_counterclockwise);
     } break;
 
     case SDLK_e: {
-      Vec2 prev_front = ship->front;
-      Vec2 prev_back = ship->back;
-      ship_rotate_clockwise(ship);
-      Vec2 p1 = ship->front;
-      Vec2 p2 = ship->back;
-      if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
-         p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
-      {
-        ship->front = prev_front;
-        ship->back = prev_back;
-      }
+      rotate_ship(game, ship, &ship_rotate_clockwise);
     } break;
 
     case SDLK_RETURN: return 1;
@@ -161,19 +146,19 @@ Vec2 app_playing_game_state_handle_events(Game* game, SDL_Keycode key, Vec2 shot
   switch(key)
   {
     case SDLK_w: case SDLK_UP: {
-      shot = move_vec2(shot, vec2(-1,0));
+      shot = move_shot(shot, vec2(-1,0));
     } break;
 
     case SDLK_a: case SDLK_LEFT: {
-      shot = move_vec2(shot, vec2(0,-1));
+      shot = move_shot(shot, vec2(0,-1));
     } break;
 
     case SDLK_s: case SDLK_DOWN: {
-      shot = move_vec2(shot, vec2(1,0));
+      shot = move_shot(shot, vec2(1,0));
     } break;
 
     case SDLK_d: case SDLK_RIGHT: {
-      shot = move_vec2(shot, vec2(0,1));
+      shot = move_shot(shot, vec2(0,1));
     } break;
 
     case SDLK_RETURN: {
@@ -185,7 +170,27 @@ Vec2 app_playing_game_state_handle_events(Game* game, SDL_Keycode key, Vec2 shot
   return shot;
 }
 
-Vec2 move_vec2(Vec2 vec, Vec2 dxy)
+void app_final_game_state(Game* game, SDL_Renderer* renderer)
+{
+  SDL_Event e;
+  while(!shouldQuit)
+  {
+    // Events
+    while(SDL_PollEvent(&e))
+    {
+      if(e.type == SDL_QUIT){
+        shouldQuit = 1;
+      }
+    }
+    // render and draw
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderClear(renderer);
+    render_all(renderer, game);
+    SDL_RenderPresent(renderer);
+  }
+}
+
+Vec2 move_shot(Vec2 vec, Vec2 dxy)
 {
   Vec2 prev = vec;
   vec = add(vec, dxy);
@@ -203,6 +208,21 @@ void move_ship(Game* game, Ship* ship, Vec2 dxy)
   ship->front = add(ship->front, dxy);
   ship->back = add(ship->back, dxy);
 
+  Vec2 p1 = ship->front;
+  Vec2 p2 = ship->back;
+  if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
+     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+  {
+    ship->front = prev_front;
+    ship->back = prev_back;
+  }
+}
+
+void rotate_ship(Game* game, Ship* ship, Rotate_func func)
+{
+  Vec2 prev_front = ship->front;
+  Vec2 prev_back = ship->back;
+  func(ship);
   Vec2 p1 = ship->front;
   Vec2 p2 = ship->back;
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||

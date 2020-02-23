@@ -20,5 +20,8 @@ void render_ship(SDL_Renderer* renderer, Ship* ship);
 void render_opponent(SDL_Renderer* renderer, Game* game);
 // render current position of shot
 void render_shot(SDL_Renderer* renderer, Vec2 shot);
+// render both players
+// Just a prototype!
+void render_all(SDL_Renderer* renderer, Game* game);
 
 #endif

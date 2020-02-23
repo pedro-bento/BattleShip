@@ -24,7 +24,7 @@ int ship_is_over(Ship* ship)
   int lower_y = MIN(ship->front.y, ship->back.y);
   int upper_y = MAX(ship->front.y, ship->back.y);
 
-  size_t length = upper_x - lower_x + upper_y - lower_y;
+  size_t length = upper_x - lower_x + upper_y - lower_y + 1;
   for(size_t i = 0; i < length; ++i)
     if(ship->states[i] == STATE_GOOD)
       return 0;
@@ -54,25 +54,20 @@ int ship_reg(Ship* ship, Vec2 point)
   int lower_y = MIN(ship->front.y, ship->back.y);
   int upper_y = MAX(ship->front.y, ship->back.y);
 
-  if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y)
-  {
-    if(lower_x == upper_x)
-    {
-      if(ship->states[point.y - lower_y] == STATE_GOOD)
-      {
+  if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y){
+    if(lower_x == upper_x){
+      if(ship->states[point.y - lower_y] == STATE_GOOD){
         ship->states[point.y - lower_y] = STATE_HIT;
         return 1;
       }
-    }
-    else
-    {
-      if(ship->states[point.x - lower_x] == STATE_GOOD)
-      {
+    }else{
+      if(ship->states[point.x - lower_x] == STATE_GOOD){
         ship->states[point.x - lower_x] = STATE_HIT;
         return 1;
       }
     }
   }
+
   return 0;
 }
 
