@@ -4,8 +4,6 @@
 #include "math/vec2.h"
 #include "config.h"
 
-// #define QT_NODE_CAPACITY 4;
-
 typedef struct
 {
   Vec2 pos;
@@ -32,6 +30,8 @@ struct _QT
 
 QT* qt_create(Vec2 top_left, Vec2 bottom_right);
 void qt_destroy(QT* qt);
+
+void qt_print(QT* qt);
 
 void qt_insert(QT* qt, QT_Node* node);
 QT_Node* qt_find(QT* qt, Vec2 pos);

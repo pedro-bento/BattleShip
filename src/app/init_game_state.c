@@ -4,7 +4,7 @@
 #include "../renderer/renderer.h"
 
 // init current player
-void player_init(Game* game, SDL_Renderer* renderer, int* shouldQuit);
+void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
 // handles inputs & returns 1 if ship is placed
 int  player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
 
@@ -14,39 +14,42 @@ void rotate_ship(Game* game, Ship* ship, Rotate_func func);
 
 void init_game_state(Game* game, SDL_Renderer* renderer, int* shouldQuit)
 {
-  game->current_player = PLAYER1;
-  player_init(game, renderer, shouldQuit);
-
-  game->current_player = PLAYER2;
-  player_init(game, renderer, shouldQuit);
-
-  game->current_player = PLAYER1;
+  player_init_game_state(game, PLAYER1, renderer, shouldQuit);
+  player_init_game_state(game, PLAYER2, renderer, shouldQuit);
 }
 
-void player_init(Game* game, SDL_Renderer* renderer, int* shouldQuit)
+void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit)
 {
   const int ship_length[5] = {5, 4, 3, 3, 2};
   int count = 0;
-  Ship* ship = game_create_random_ship(game, ship_length[count]);
+  Ship* ship = game_create_random_ship(game, player, ship_length[count]);
 
   SDL_Event e;
-  while(count < NUM_OF_SHIPS && !*shouldQuit){
-    while(SDL_PollEvent(&e)){
-      if(e.type == SDL_KEYDOWN){
-        if(player_init_handle_events(game, e.key.keysym.sym, ship)){
-          if(game_player_add_ship(game, ship, count)){
+  while(count < NUM_OF_SHIPS && !*shouldQuit)
+  {
+    while(SDL_PollEvent(&e))
+    {
+      if(e.type == SDL_KEYDOWN)
+      {
+        if(player_init_handle_events(game, e.key.keysym.sym, ship))
+        {
+          if(game_player_place_ship(game, player, ship))
+          {
             count++;
-            ship = game_create_random_ship(game, ship_length[count % 5]);
+            ship = game_create_random_ship(game, player, ship_length[count % 5]);
           }
         }
-      }else if(e.type == SDL_QUIT){
+      }
+
+      else if(e.type == SDL_QUIT)
+      {
         *shouldQuit = 1;
       }
     }
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
-    render_current_player(renderer, game);
+    render_game_player(renderer, game, player);
     render_ship(renderer, ship);
     SDL_RenderPresent(renderer);
   }

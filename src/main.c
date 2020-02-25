@@ -1,9 +1,7 @@
 #include "app/app.h"
+#include "game/game.h"
+#include "game/player.h"
 #include "quadtree.h"
-#include "math/vec2.h"
-#include "config.h"
-#include "renderer/renderer.h"
-#include "stacktrace.h"
 
 #include <stdio.h>
 

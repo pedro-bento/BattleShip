@@ -1,17 +1,20 @@
+#include <stdio.h>
 #include "ship.h"
+#include "../stacktrace.h"
 
-Ship* ship_alloc(size_t length)
+Ship* ship_create(size_t length)
 {
   Ship* ship = malloc(sizeof(Ship));
   ship->front = vec2(0, 0);
   ship->back = vec2(length - 1, 0);
   ship->states = malloc(length * sizeof(char));
+  trace_assert(ship->states);
   for(size_t i = 0; i < length; ++i)
     ship->states[i] = STATE_GOOD;
   return ship;
 }
 
-void ship_free(Ship* ship)
+void ship_destroy(Ship* ship)
 {
   free(ship->states);
   free(ship);
@@ -47,7 +50,7 @@ char ship_contains(Ship* ship, Vec2 point)
   return STATE_NULL;
 }
 
-int ship_reg(Ship* ship, Vec2 point)
+int ship_register_hit(Ship* ship, Vec2 point)
 {
   int lower_x = MIN(ship->front.x, ship->back.x);
   int upper_x = MAX(ship->front.x, ship->back.x);

@@ -21,15 +21,15 @@ typedef struct
 //  front:  (0,0)
 //  back:   (length - 1, 0)
 //  states: STATE_GOOD
-Ship* ship_alloc(size_t length);
-void ship_free(Ship* ship);
+Ship* ship_create(size_t length);
+void ship_destroy(Ship* ship);
 
 // returns 1 if all states are STATE_HIT, otherwise 0
 int ship_is_over(Ship* ship);
-// returns a (char) STATE_GOOD or STATE_HIT if contains the point, otherwise STATE_EMPTY
+// returns a (char) STATE_GOOD or STATE_HIT if contains the point, otherwise STATE_NULL
 char ship_contains(Ship* ship, Vec2 point);
 // register and returns 1 if hit, otherwise 0
-int ship_reg(Ship* ship, Vec2 point);
+int ship_register_hit(Ship* ship, Vec2 point);
 // returns 1 if ships intersect, otherwise 0
 int ship_intersect(Ship* ship1, Ship* ship2);
 // moves front and back of the ship

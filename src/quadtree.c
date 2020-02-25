@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
 
 #include "quadtree.h"
 #include "stacktrace.h"
@@ -36,15 +38,23 @@ QT* qt_create(Vec2 top_left, Vec2 bottom_right)
 void qt_destroy(QT* qt)
 {
   if(qt == NULL) return;
-  else
-  {
-    qt_destroy(qt->t_left);
-    qt_destroy(qt->t_right);
-    qt_destroy(qt->b_left);
-    qt_destroy(qt->b_right);
-    qt_node_destroy(qt->node);
-    free(qt);
-  }
+  qt_destroy(qt->t_left);
+  qt_destroy(qt->t_right);
+  qt_destroy(qt->b_left);
+  qt_destroy(qt->b_right);
+  if(qt->node != NULL) qt_node_destroy(qt->node);
+  free(qt);
+}
+
+void qt_print(QT* qt)
+{
+  if(qt == NULL) return;
+  qt_print(qt->t_left);
+  qt_print(qt->t_right);
+  qt_print(qt->b_left);
+  qt_print(qt->b_right);
+  if(qt->node == NULL) return;
+  printf("(%d,%d): %p\n", qt->node->pos.x, qt->node->pos.y, qt->node->data);
 }
 
 void qt_insert(QT* qt, QT_Node* node)
@@ -60,10 +70,10 @@ void qt_insert(QT* qt, QT_Node* node)
     return;
   }
 
-  if((qt->top_left.x + qt->bottom_right.x) / 2 >= node->pos.x)
+  if((qt->top_left.x + qt->bottom_right.x) / 2 > node->pos.x)
   {
     // t_left tree
-    if((qt->top_left.y + qt->bottom_right.y) / 2 >= node->pos.y)
+    if((qt->top_left.y + qt->bottom_right.y) / 2 > node->pos.y)
     {
       if(qt->t_left == NULL)
       {
@@ -90,7 +100,7 @@ void qt_insert(QT* qt, QT_Node* node)
   else
   {
     // t_right tree
-    if((qt->top_left.y + qt->bottom_right.y) / 2 >= node->pos.y)
+    if((qt->top_left.y + qt->bottom_right.y) / 2 > node->pos.y)
     {
       if(qt->t_right == NULL)
       {
@@ -108,7 +118,7 @@ void qt_insert(QT* qt, QT_Node* node)
       {
         qt->b_right = qt_create(
           vec2((qt->top_left.x + qt->bottom_right.x) / 2,
-            (qt->top_left.y + qt->bottom_right.y) / 2),
+               (qt->top_left.y + qt->bottom_right.y) / 2),
           qt->bottom_right);
       }
       qt_insert(qt->b_right, node);
@@ -121,10 +131,10 @@ QT_Node* qt_find(QT* qt, Vec2 pos)
   if(!qt_inBoundary(qt, pos)) return NULL;
   if(qt->node != NULL) return qt->node;
 
-  if((qt->top_left.x + qt->bottom_right.x) / 2 >= pos.x)
+  if((qt->top_left.x + qt->bottom_right.x) / 2 > pos.x)
   {
     // t_left tree
-    if((qt->top_left.y + qt->bottom_right.y) / 2 >= pos.y)
+    if((qt->top_left.y + qt->bottom_right.y) / 2 > pos.y)
     {
       if(qt->t_left == NULL)
         return NULL;
@@ -143,7 +153,7 @@ QT_Node* qt_find(QT* qt, Vec2 pos)
   else
   {
     // t_right tree
-    if((qt->top_left.y + qt->bottom_right.y) / 2 >= pos.y)
+    if((qt->top_left.y + qt->bottom_right.y) / 2 > pos.y)
     {
       if(qt->t_right == NULL)
         return NULL;
@@ -155,10 +165,10 @@ QT_Node* qt_find(QT* qt, Vec2 pos)
     {
       if(qt->b_right == NULL)
         return NULL;
-      qt_find(qt->b_right, pos);
+      return qt_find(qt->b_right, pos);
     }
   }
-  
+
   return NULL;
 }
 

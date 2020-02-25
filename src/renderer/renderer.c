@@ -1,5 +1,7 @@
 #include "renderer.h"
 
+void render_quadtree(SDL_Renderer* renderer, QT* qt);
+
 typedef struct
 {
   int r;
@@ -23,20 +25,21 @@ void render_grid(SDL_Renderer* renderer)
    SDL_RenderDrawLine(renderer, 0, MAP_LENGTH * CELL_WIDTH, SCREEN_WIDTH, MAP_LENGTH * CELL_WIDTH);
 }
 
-void render_ships(SDL_Renderer* renderer, Game* game, int isOpponent)
+void render_ships(SDL_Renderer* renderer, Game* game, GamePlayer player, int isOpp)
 {
-  Player player = isOpponent == 0 ? game->current_player :
-    game->current_player == PLAYER1 ? PLAYER2 : PLAYER1;
   for(int x = 0; x < MAP_LENGTH; ++x)
   {
     for(int y = 0; y < MAP_LENGTH; ++y)
     {
-      char state = game_player_get_cell(game, player, vec2(y,x));
-      if(state == STATE_GOOD && !isOpponent){
+      char state = game_player_get_map_state(game, player, vec2(y,x));
+      if(state == STATE_GOOD && !isOpp)
+      {
         SDL_SetRenderDrawColor(renderer, ship_good.r, ship_good.g, ship_good.b, 255);
         SDL_Rect rect = { .x = x * CELL_WIDTH, .y = y * CELL_WIDTH, .w = CELL_WIDTH, .h = CELL_WIDTH};
         SDL_RenderFillRect(renderer, &rect);
-      }else if(state == STATE_HIT){
+      }
+      else if(state == STATE_HIT)
+      {
         SDL_SetRenderDrawColor(renderer, ship_hit.r, ship_hit.g, ship_hit.b, 255);
         SDL_Rect rect = { .x = x * CELL_WIDTH, .y = y * CELL_WIDTH, .w = CELL_WIDTH, .h = CELL_WIDTH};
         SDL_RenderFillRect(renderer, &rect);
@@ -45,10 +48,16 @@ void render_ships(SDL_Renderer* renderer, Game* game, int isOpponent)
   }
 }
 
-void render_current_player(SDL_Renderer* renderer, Game* game)
+void render_game_player(SDL_Renderer* renderer, Game* game, GamePlayer player)
 {
+#ifndef NDEBUG
+  if(player == PLAYER1) render_quadtree(renderer, game->player1.map);
+  else render_quadtree(renderer, game->player2.map);
+#else
   render_grid(renderer);
-  render_ships(renderer, game, 0);
+#endif
+
+  render_ships(renderer, game, player, 0);
 }
 
 void render_ship(SDL_Renderer* renderer, Ship* ship)
@@ -63,10 +72,16 @@ void render_ship(SDL_Renderer* renderer, Ship* ship)
       }
 }
 
-void render_opponent(SDL_Renderer* renderer, Game* game)
+void render_opponent(SDL_Renderer* renderer, Game* game, GamePlayer player)
 {
-  render_grid(renderer);
-  render_ships(renderer, game, 1);
+#ifndef NDEBUG
+    if(player == PLAYER1) render_quadtree(renderer, game->player1.map);
+    else render_quadtree(renderer, game->player2.map);
+#else
+    render_grid(renderer);
+#endif
+
+  render_ships(renderer, game, player, 1);
 }
 
 void render_shot(SDL_Renderer* renderer, Vec2 shot)
@@ -98,12 +113,12 @@ void render_all(SDL_Renderer* renderer, Game* game)
     SDL_RenderDrawLine(renderer, SCREEN_WIDTH/2, SCREEN_WIDTH/2 + MAP_LENGTH * CELL_WIDTH/2,
       SCREEN_WIDTH, SCREEN_WIDTH/2 + MAP_LENGTH * CELL_WIDTH/2);
 
-    Player player = PLAYER1;
+    GamePlayer player = PLAYER1;
     for(int x = 0; x < MAP_LENGTH; ++x)
     {
       for(int y = 0; y < MAP_LENGTH; ++y)
       {
-        char state = game_player_get_cell(game, player, vec2(y,x));
+        char state = game_player_get_map_state(game, player, vec2(y,x));
         if(state == STATE_GOOD){
           SDL_SetRenderDrawColor(renderer, ship_good.r, ship_good.g, ship_good.b, 255);
           SDL_Rect rect = { .x = x * CELL_WIDTH/2, .y = y * CELL_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
@@ -121,7 +136,7 @@ void render_all(SDL_Renderer* renderer, Game* game)
     {
       for(int y = 0; y < MAP_LENGTH; ++y)
       {
-        char state = game_player_get_cell(game, player, vec2(y,x));
+        char state = game_player_get_map_state(game, player, vec2(y,x));
         if(state == STATE_GOOD){
           SDL_SetRenderDrawColor(renderer, ship_good.r, ship_good.g, ship_good.b, 255);
           SDL_Rect rect = { .x = x * CELL_WIDTH/2 + SCREEN_WIDTH/2, .y = y * CELL_WIDTH/2 + SCREEN_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2};
@@ -139,15 +154,15 @@ void render_square(SDL_Renderer* renderer, Vec2 top_left, Vec2 bottom_right)
 {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
-  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
-    top_left.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
-  SDL_RenderDrawLine(renderer, bottom_right.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
-    bottom_right.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, top_left.y * CELL_WIDTH, top_left.x * CELL_WIDTH,
+    top_left.y * CELL_WIDTH, bottom_right.x * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, bottom_right.y * CELL_WIDTH, top_left.x * CELL_WIDTH,
+    bottom_right.y * CELL_WIDTH, bottom_right.x * CELL_WIDTH);
 
-  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
-    bottom_right.x * CELL_WIDTH, top_left.y * CELL_WIDTH);
-  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH,
-    bottom_right.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, top_left.y * CELL_WIDTH, top_left.x * CELL_WIDTH,
+    bottom_right.y * CELL_WIDTH, top_left.x * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, top_left.y * CELL_WIDTH, bottom_right.x * CELL_WIDTH,
+    bottom_right.y * CELL_WIDTH, bottom_right.x * CELL_WIDTH);
 }
 
 void render_quadtree(SDL_Renderer* renderer, QT* qt)

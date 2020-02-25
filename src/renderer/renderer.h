@@ -11,12 +11,11 @@
 #include "../quadtree.h"
 
 // renders current player board (grid and ships)
-void render_current_player(SDL_Renderer* renderer, Game* game);
+void render_game_player(SDL_Renderer* renderer, Game* game, GamePlayer player);
 // render current position ship
-// CAN BE OPTIMIZED
 void render_ship(SDL_Renderer* renderer, Ship* ship);
 // renders opponents board (grid and hits)
-void render_opponent(SDL_Renderer* renderer, Game* game);
+void render_opponent(SDL_Renderer* renderer, Game* game, GamePlayer player);
 // render current position of shot
 void render_shot(SDL_Renderer* renderer, Vec2 shot);
 // render both players

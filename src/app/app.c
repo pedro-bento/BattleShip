@@ -11,7 +11,7 @@
 void app_run()
 {
   Game game;
-  game_init(&game);
+  game_init_empty(&game);
   int shouldQuit = 0;
 
   SDL_Init(SDL_INIT_VIDEO);
