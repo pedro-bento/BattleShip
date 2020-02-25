@@ -1,6 +1,8 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+// #define NDEBUG
+
 // acording to BattleShip rules
 #define MAP_LENGTH 10
 #define NUM_OF_SHIPS 5

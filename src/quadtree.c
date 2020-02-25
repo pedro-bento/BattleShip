@@ -3,7 +3,7 @@
 #include <math.h>
 
 #include "quadtree.h"
-#include "stacktrace.h"
+#include "system/stacktrace.h"
 
 int  qt_inBoundary(QT* qt, Vec2 p);
 

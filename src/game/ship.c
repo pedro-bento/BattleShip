@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "ship.h"
-#include "../stacktrace.h"
+#include "../system/stacktrace.h"
 
 Ship* ship_create(size_t length)
 {

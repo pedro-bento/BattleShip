@@ -15,7 +15,7 @@ FILES =\
 	src/app/playing_game_state.c\
 	src/app/end_game_state.c\
 	src/quadtree.c\
-	src/stacktrace.c\
+	src/system/stacktrace.c\
 	src/game/player.c\
 
 battleship: $(FILES)
