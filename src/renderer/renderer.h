@@ -1,15 +1,14 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <stdio.h>
 #include <SDL.h>
 
 #include "../game/game.h"
 #include "../math/vec2.h"
 #include "../game/ship.h"
-
-#define SCREEN_WIDTH 600
-#define FOOTER_HEIGHT (SCREEN_WIDTH/10)
-#define CELL_WIDTH (SCREEN_WIDTH / MAP_LENGTH)
+#include "../config.h"
+#include "../quadtree.h"
 
 // renders current player board (grid and ships)
 void render_current_player(SDL_Renderer* renderer, Game* game);
@@ -23,5 +22,7 @@ void render_shot(SDL_Renderer* renderer, Vec2 shot);
 // render both players
 // Just a prototype!
 void render_all(SDL_Renderer* renderer, Game* game);
+
+void render_quadtree(SDL_Renderer* renderer, QT* qt);
 
 #endif

@@ -134,3 +134,30 @@ void render_all(SDL_Renderer* renderer, Game* game)
       }
     }
 }
+
+void render_square(SDL_Renderer* renderer, Vec2 top_left, Vec2 bottom_right)
+{
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+
+  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
+    top_left.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, bottom_right.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
+    bottom_right.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
+
+  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, top_left.y * CELL_WIDTH,
+    bottom_right.x * CELL_WIDTH, top_left.y * CELL_WIDTH);
+  SDL_RenderDrawLine(renderer, top_left.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH,
+    bottom_right.x * CELL_WIDTH, bottom_right.y * CELL_WIDTH);
+}
+
+void render_quadtree(SDL_Renderer* renderer, QT* qt)
+{
+  if(qt == NULL) return;
+
+  render_square(renderer, qt->top_left, qt->bottom_right);
+
+  render_quadtree(renderer, qt->t_left);
+  render_quadtree(renderer, qt->t_right);
+  render_quadtree(renderer, qt->b_left);
+  render_quadtree(renderer, qt->b_right);
+}
