@@ -2,6 +2,7 @@
 #include "../math/vec2.h"
 #include "../game/ship.h"
 #include "../renderer/renderer.h"
+#include "../ui/ui.h"
 
 // init current player
 void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
@@ -23,6 +24,24 @@ void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* rendere
   const int ship_length[5] = {5, 4, 3, 3, 2};
   int count = 0;
   Ship* ship = game_create_random_ship(game, player, ship_length[count]);
+
+  TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
+  SDL_Color text_color = {255, 255, 255};
+
+  char* str;
+  if(player == PLAYER1){
+    str = "Place your ships, Player 1!\0";
+  }else{
+    str = "Place your ships, Player 2!\0";
+  }
+
+  SDL_Surface* surface_player1 = TTF_RenderText_Solid(ubuntu_mono, str, text_color);
+  SDL_Texture* player1_message = SDL_CreateTextureFromSurface(renderer, surface_player1);
+
+  TextBox player_init = {.text = player1_message,
+    .pos_rect = { .x = SCREEN_WIDTH/2-200, .y = SCREEN_HEIGHT+FOOTER_HEIGHT-60, .w = 400, .h = 60},
+    .text_rect = { .x = SCREEN_WIDTH/2-190, .y = SCREEN_HEIGHT+FOOTER_HEIGHT-50, .w = 380, .h = 40},
+    .backgroud_color = {0, 0, 0}};
 
   SDL_Event e;
   while(count < NUM_OF_SHIPS && !*shouldQuit)
@@ -51,6 +70,7 @@ void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* rendere
     SDL_RenderClear(renderer);
     render_game_player(renderer, game, player);
     render_ship(renderer, ship);
+    textbox_render(&player_init, renderer);
     SDL_RenderPresent(renderer);
   }
 }

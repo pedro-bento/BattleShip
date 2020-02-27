@@ -17,4 +17,14 @@ typedef struct
 void button_render(const Button* button, SDL_Renderer* renderer);
 int button_isClick(Button* button, Vec2 pos);
 
+typedef struct
+{
+  SDL_Texture* text;
+  SDL_Rect text_rect;
+  SDL_Rect pos_rect;
+  SDL_Color backgroud_color;
+} TextBox;
+
+void textbox_render(const TextBox* textbox, SDL_Renderer* renderer);
+
 #endif

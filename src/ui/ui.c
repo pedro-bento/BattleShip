@@ -14,3 +14,10 @@ int button_isClick(Button* button, Vec2 pos)
      return 1;
   return 0;
 }
+
+void textbox_render(const TextBox* textbox, SDL_Renderer* renderer)
+{
+  SDL_SetRenderDrawColor(renderer, textbox->backgroud_color.r, textbox->backgroud_color.g, textbox->backgroud_color.b, 255);
+  SDL_RenderFillRect(renderer, &textbox->pos_rect);
+  SDL_RenderCopy(renderer, textbox->text, NULL, &textbox->text_rect);
+}

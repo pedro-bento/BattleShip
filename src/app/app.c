@@ -5,23 +5,11 @@
 
 #include "../game/game.h"
 #include "../renderer/renderer.h"
+#include "state.h"
 #include "begin_game_state.h"
 #include "init_game_state.h"
 #include "playing_game_state.h"
 #include "end_game_state.h"
-
-
-/* TODO: implemente rendering with general State struct */
-typedef struct State State;
-typedef void (*Render)(State*);
-typedef void (*HandleEvent)(State*, SDL_Event*);
-struct State
-{
-  void* data;
-  Render render;
-  HandleEvent handle_event;
-};
-
 
 void app_run()
 {
@@ -34,7 +22,24 @@ void app_run()
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   TTF_Init();
 
-  begin_game_state(renderer, &shouldQuit);
+  State* game_states[] = {
+    begin_state_create(renderer),
+  };
+
+  size_t stateID = 0, nextState = 0;
+  SDL_Event e;
+  while(!shouldQuit && !nextState)
+  {
+    while(SDL_PollEvent(&e))
+    {
+      if(e.type == SDL_QUIT)
+        shouldQuit = 1;
+      if(game_states[stateID]->handle_event(game_states[stateID], &e))
+        nextState = 1;
+    }
+    game_states[stateID]->render(game_states[stateID], renderer);
+  }
+
   init_game_state(&game, renderer, &shouldQuit);
   playing_game_state(&game, renderer, &shouldQuit);
   end_game_state(&game, renderer, &shouldQuit);
@@ -43,6 +48,7 @@ void app_run()
   else printf("\nPLAYER 2 WON!\n");
 
   game_free(&game);
+  begin_state_destroy(game_states[0]);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
