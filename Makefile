@@ -1,4 +1,4 @@
-PKGS = sdl2
+PKGS = sdl2 SDL2_ttf
 
 CC = gcc
 CFLAGS = -Wall $(shell pkg-config --cflags $(PKGS))
@@ -11,12 +11,14 @@ FILES =\
 	src/game/game.c\
 	src/renderer/renderer.c\
 	src/app/app.c\
+	src/app/begin_game_state.c\
 	src/app/init_game_state.c\
 	src/app/playing_game_state.c\
 	src/app/end_game_state.c\
 	src/quadtree.c\
 	src/system/stacktrace.c\
 	src/game/player.c\
+	src/ui/ui.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)

@@ -3,21 +3,21 @@
 
 #include <stdint.h>
 
-// Currently there is no need for more than uint_8
+// Currently there is no need for more than int_16
 typedef struct
 {
-  int8_t x;
-  int8_t y;
+  int16_t x;
+  int16_t y;
 } Vec2;
 
 // can be passed by value because it's size is less tha a pointers size
-static inline Vec2 vec2(int8_t x, int8_t y)
+static inline Vec2 vec2(int16_t x, int16_t y)
 {
   Vec2 v = {x, y};
   return v;
 }
 
-static inline Vec2 scalar(Vec2 u, int8_t s)
+static inline Vec2 scalar(Vec2 u, int16_t s)
 {
   Vec2 v = {u.x * s, u.y * s};
   return v;

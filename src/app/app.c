@@ -1,12 +1,27 @@
 #include "app.h"
 
 #include <SDL.h>
+#include <SDL_ttf.h>
 
 #include "../game/game.h"
 #include "../renderer/renderer.h"
+#include "begin_game_state.h"
 #include "init_game_state.h"
 #include "playing_game_state.h"
 #include "end_game_state.h"
+
+
+/* TODO: implemente rendering with general State struct */
+typedef struct State State;
+typedef void (*Render)(State*);
+typedef void (*HandleEvent)(State*, SDL_Event*);
+struct State
+{
+  void* data;
+  Render render;
+  HandleEvent handle_event;
+};
+
 
 void app_run()
 {
@@ -17,7 +32,9 @@ void app_run()
   SDL_Init(SDL_INIT_VIDEO);
   SDL_Window* window = SDL_CreateWindow("BattleShip", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_WIDTH + FOOTER_HEIGHT, SDL_WINDOW_SHOWN);
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+  TTF_Init();
 
+  begin_game_state(renderer, &shouldQuit);
   init_game_state(&game, renderer, &shouldQuit);
   playing_game_state(&game, renderer, &shouldQuit);
   end_game_state(&game, renderer, &shouldQuit);
@@ -27,7 +44,7 @@ void app_run()
 
   game_free(&game);
 
-  // SDL_DestroyRenderer(renderer);
-  // SDL_DestroyWindow(window);
-  // SDL_Quit(); // malloc_consolidation error?????
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
 }

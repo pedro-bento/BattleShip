@@ -1,4 +1,5 @@
 #include "end_game_state.h"
+
 #include "../renderer/renderer.h"
 
 void end_game_state(Game* game, SDL_Renderer* renderer, int* shouldQuit)
