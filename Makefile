@@ -11,8 +11,8 @@ FILES =\
 	src/game/game.c\
 	src/renderer/renderer.c\
 	src/app/app.c\
-	src/app/begin_game_state.c\
-	src/app/init_game_state.c\
+	src/app/begin_state.c\
+	src/app/init_state.c\
 	src/app/playing_game_state.c\
 	src/app/end_game_state.c\
 	src/quadtree.c\

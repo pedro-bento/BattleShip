@@ -1,6 +1,6 @@
 #include <SDL_ttf.h>
 
-#include "begin_game_state.h"
+#include "begin_state.h"
 #include "../ui/ui.h"
 #include "../config.h"
 #include "../system/stacktrace.h"
@@ -9,10 +9,12 @@ typedef struct
 {
   Button classic;
   Button custom;
+  int next;
 } BeginData;
 
 void begin_render(State* s, SDL_Renderer* renderer);
-int begin_handle_event(State* s, SDL_Event* e);
+void begin_handle_event(State* s, SDL_Event* e);
+int begin_update(State* s, SDL_Renderer* renderer);
 
 State* begin_state_create(SDL_Renderer* renderer)
 {
@@ -62,10 +64,13 @@ State* begin_state_create(SDL_Renderer* renderer)
   data->custom.color.g = 0;
   data->custom.color.b = 0;
 
-   begin->data = (void*)data;
-   begin->render = &begin_render;
-   begin->handle_event = &begin_handle_event;
-   return begin;
+  data->next = 0;
+
+  begin->data = (void*)data;
+  begin->render = &begin_render;
+  begin->handle_event = &begin_handle_event;
+  begin->update = &begin_update;
+  return begin;
 }
 
 void begin_state_destroy(State* state)
@@ -84,10 +89,15 @@ void begin_render(State* s, SDL_Renderer* renderer)
   SDL_RenderPresent(renderer);
 }
 
-int begin_handle_event(State* s, SDL_Event* e)
+void begin_handle_event(State* s, SDL_Event* e)
 {
   if(e->type == SDL_MOUSEBUTTONDOWN)
     if(button_isClick(&((BeginData*)s->data)->classic, vec2(e->button.x, e->button.y)))
-      return 1;
-  return 0;
+      ((BeginData*)s->data)->next = 1;
+}
+
+int begin_update(State* s, SDL_Renderer* renderer)
+{
+  (void)renderer;
+  return ((BeginData*)s->data)->next;
 }

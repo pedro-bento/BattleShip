@@ -5,7 +5,7 @@
 
 // acording to BattleShip rules
 #define MAP_LENGTH 8
-#define NUM_OF_SHIPS 2
+#define NUM_OF_SHIPS 1
 
 #define SCREEN_WIDTH 600
 #define SCREEN_HEIGHT 600

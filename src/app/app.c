@@ -6,8 +6,8 @@
 #include "../game/game.h"
 #include "../renderer/renderer.h"
 #include "state.h"
-#include "begin_game_state.h"
-#include "init_game_state.h"
+#include "begin_state.h"
+#include "init_state.h"
 #include "playing_game_state.h"
 #include "end_game_state.h"
 
@@ -24,23 +24,26 @@ void app_run()
 
   State* game_states[] = {
     begin_state_create(renderer),
+    init_state_create(&game, renderer),
   };
 
-  size_t stateID = 0, nextState = 0;
   SDL_Event e;
-  while(!shouldQuit && !nextState)
+  size_t stateID = 0, maxID = 1;
+  while(!shouldQuit && stateID <= maxID)
   {
     while(SDL_PollEvent(&e))
     {
       if(e.type == SDL_QUIT)
         shouldQuit = 1;
-      if(game_states[stateID]->handle_event(game_states[stateID], &e))
-        nextState = 1;
+      game_states[stateID]->handle_event(game_states[stateID], &e);
     }
+
     game_states[stateID]->render(game_states[stateID], renderer);
+
+    if(game_states[stateID]->update(game_states[stateID], renderer))
+      stateID++;
   }
 
-  init_game_state(&game, renderer, &shouldQuit);
   playing_game_state(&game, renderer, &shouldQuit);
   end_game_state(&game, renderer, &shouldQuit);
 
@@ -49,6 +52,7 @@ void app_run()
 
   game_free(&game);
   begin_state_destroy(game_states[0]);
+  init_state_destroy(game_states[1]);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
