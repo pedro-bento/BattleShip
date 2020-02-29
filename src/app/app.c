@@ -8,8 +8,8 @@
 #include "state.h"
 #include "begin_state.h"
 #include "init_state.h"
-#include "playing_game_state.h"
-#include "end_game_state.h"
+#include "playing_state.h"
+#include "end_state.h"
 
 void app_run()
 {
@@ -25,10 +25,12 @@ void app_run()
   State* game_states[] = {
     begin_state_create(renderer),
     init_state_create(&game, renderer),
+    playing_state_create(&game, renderer),
+    end_state_create(&game),
   };
 
   SDL_Event e;
-  size_t stateID = 0, maxID = 1;
+  size_t stateID = 0, maxID = 3;
   while(!shouldQuit && stateID <= maxID)
   {
     while(SDL_PollEvent(&e))
@@ -44,15 +46,15 @@ void app_run()
       stateID++;
   }
 
-  playing_game_state(&game, renderer, &shouldQuit);
-  end_game_state(&game, renderer, &shouldQuit);
-
+  // Just for debug
   if(game.state == PLAYER1_WIN) printf("\nPLAYER 1 WON!\n");
   else printf("\nPLAYER 2 WON!\n");
 
   game_free(&game);
   begin_state_destroy(game_states[0]);
   init_state_destroy(game_states[1]);
+  playing_state_destroy(game_states[2]);
+  end_state_destroy(game_states[3]);
 
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

@@ -13,8 +13,8 @@ FILES =\
 	src/app/app.c\
 	src/app/begin_state.c\
 	src/app/init_state.c\
-	src/app/playing_game_state.c\
-	src/app/end_game_state.c\
+	src/app/playing_state.c\
+	src/app/end_state.c\
 	src/quadtree.c\
 	src/system/stacktrace.c\
 	src/game/player.c\
