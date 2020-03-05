@@ -8,11 +8,11 @@
 // init current player
 void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
 // handles inputs & returns 1 if ship is placed
-int  player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
+int  player_init_handle_events(Game* game, SDL_Keycode key, ShipLine* ship);
 
-typedef void (*Rotate_func)(Ship* ship);
-void move_ship(Game* game, Ship* ship, Vec2 dxy);
-void rotate_ship(Game* game, Ship* ship, Rotate_func func);
+typedef void (*Rotate_func)(ShipLine* ship);
+void move_ship(Game* game, ShipLine* ship, Vec2 dxy);
+void rotate_ship(Game* game, ShipLine* ship, Rotate_func func);
 
 typedef struct
 {
@@ -20,7 +20,7 @@ typedef struct
   TextBox text;
   GamePlayer current_player;
   int ship_length[5];
-  Ship* ship;
+  ShipLine* ship;
   int count;
 } InitData;
 
@@ -82,7 +82,7 @@ void init_render(State* s, SDL_Renderer* renderer)
 void init_handle_event(State* s, SDL_Event* e)
 {
   Game* game = ((InitData*)s->data)->game;
-  Ship* ship = ((InitData*)s->data)->ship;
+  ShipLine* ship = ((InitData*)s->data)->ship;
   GamePlayer player = ((InitData*)s->data)->current_player;
 
   if(e->type == SDL_KEYDOWN)
@@ -148,7 +148,7 @@ int init_update(State* s, SDL_Renderer* renderer)
   return 0;
 }
 
-void move_ship(Game* game, Ship* ship, Vec2 dxy)
+void move_ship(Game* game, ShipLine* ship, Vec2 dxy)
 {
   Vec2 prev_front = ship->front;
   Vec2 prev_back = ship->back;
@@ -166,7 +166,7 @@ void move_ship(Game* game, Ship* ship, Vec2 dxy)
   }
 }
 
-void rotate_ship(Game* game, Ship* ship, Rotate_func func)
+void rotate_ship(Game* game, ShipLine* ship, Rotate_func func)
 {
   Vec2 prev_front = ship->front;
   Vec2 prev_back = ship->back;

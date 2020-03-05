@@ -32,10 +32,10 @@ void render_ships(SDL_Renderer* renderer, Game* game, GamePlayer player, int isO
     for(int y = 0; y < MAP_LENGTH; ++y)
     {
       char state = game_player_get_map_state(game, player, vec2(y,x));
-      if(state == STATE_GOOD && !isOpp)
+      if(state == GOOD && !isOpp)
         render_rect(renderer, (SDL_Rect){.x = x * CELL_WIDTH,
           .y = y * CELL_WIDTH, .w = CELL_WIDTH, .h = CELL_WIDTH}, green);
-      else if(state == STATE_HIT)
+      else if(state == HIT)
         render_rect(renderer, (SDL_Rect){.x = x * CELL_WIDTH,
           .y = y * CELL_WIDTH, .w = CELL_WIDTH, .h = CELL_WIDTH}, red);
     }
@@ -48,11 +48,11 @@ void render_game_player(SDL_Renderer* renderer, Game* game, GamePlayer player)
   render_ships(renderer, game, player, 0);
 }
 
-void render_ship(SDL_Renderer* renderer, Ship* ship)
+void render_ship(SDL_Renderer* renderer, ShipLine* ship)
 {
   for(int x = 0; x < MAP_LENGTH; ++x)
     for(int y = 0; y < MAP_LENGTH; ++y)
-      if(ship_contains(ship, vec2(y,x)) != '\0')
+      if(ship_contains(ship, vec2(y,x)) != EMPTY)
         render_rect(renderer, (SDL_Rect){.x = x * CELL_WIDTH,
           .y = y * CELL_WIDTH, .w = CELL_WIDTH, .h = CELL_WIDTH}, yellow);
 }
@@ -101,10 +101,10 @@ void render_all(SDL_Renderer* renderer, Game* game)
       for(int y = 0; y < MAP_LENGTH; ++y)
       {
         char state = game_player_get_map_state(game, player, vec2(y,x));
-        if(state == STATE_GOOD){
+        if(state == GOOD){
           render_rect(renderer, (SDL_Rect){.x = x * CELL_WIDTH/2,
             .y = y * CELL_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2}, green);
-        }else if(state == STATE_HIT){
+        }else if(state == HIT){
           render_rect(renderer, (SDL_Rect){.x = x * CELL_WIDTH/2,
             .y = y * CELL_WIDTH/2, .w = CELL_WIDTH/2, .h = CELL_WIDTH/2}, red);
         }
@@ -117,11 +117,11 @@ void render_all(SDL_Renderer* renderer, Game* game)
       for(int y = 0; y < MAP_LENGTH; ++y)
       {
         char state = game_player_get_map_state(game, player, vec2(y,x));
-        if(state == STATE_GOOD){
+        if(state == GOOD){
           render_rect(renderer, (SDL_Rect){.x = min/2 + x * CELL_WIDTH/2,
             .y = min/2 + y * CELL_WIDTH/2, .w = CELL_WIDTH/2,
             .h = CELL_WIDTH/2}, green);
-        }else if(state == STATE_HIT){
+        }else if(state == HIT){
           render_rect(renderer, (SDL_Rect){.x = min/2 + x * CELL_WIDTH/2,
             .y = min/2 + y * CELL_WIDTH/2, .w = CELL_WIDTH/2,
             .h = CELL_WIDTH/2}, red);

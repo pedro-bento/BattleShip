@@ -31,10 +31,10 @@ void game_init_empty(Game* game);
 void game_free(Game* game);
 
 // returns a random and valid ship for player
-Ship* game_create_random_ship(Game* game, GamePlayer player, int ship_length);
+ShipLine* game_create_random_ship(Game* game, GamePlayer player, int ship_length);
 // adds ship to player
 // returns 1 if successful, otherwise 0
-int game_player_place_ship(Game* game, GamePlayer player, Ship* ship);
+int game_player_place_ship(Game* game, GamePlayer player, ShipLine* ship);
 // registers player shot at position "pos"
 // if hit checks if opponet is_over
 // if opponet is_over updates state

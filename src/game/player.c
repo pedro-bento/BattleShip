@@ -26,7 +26,7 @@ void player_free(Player* player)
   qt_destroy(player->map);
 }
 
-int player_is_valid_ship(Player* player, Ship* ship)
+int player_is_valid_ship(Player* player, ShipLine* ship)
 {
   Vec2 p1 = ship->front;
   Vec2 p2 = ship->back;
@@ -45,9 +45,9 @@ int player_is_valid_ship(Player* player, Ship* ship)
   return 1;
 }
 
-Ship* player_create_random_ship(Player* player, int ship_length)
+ShipLine* player_create_random_ship(Player* player, int ship_length)
 {
-  Ship* ship = ship_create(ship_length);
+  ShipLine* ship = ship_create(ship_length);
   do{
     ship_move(ship, vec2(rdn_range(0, MAP_LENGTH-1), rdn_range(0, MAP_LENGTH-1)));
     size_t num_rots = rdn_range(0, 4);
@@ -57,7 +57,7 @@ Ship* player_create_random_ship(Player* player, int ship_length)
   return ship;
 }
 
-int player_add_ship(Player* player, Ship* ship)
+int player_add_ship(Player* player, ShipLine* ship)
 {
   if(!player_is_valid_ship(player, ship))
     return 0;
@@ -81,18 +81,18 @@ int player_add_ship(Player* player, Ship* ship)
   return 1;
 }
 
-char player_get_map_state(Player* player, Vec2 pos)
+ShipState player_get_map_state(Player* player, Vec2 pos)
 {
   QT_Node* node = qt_find(player->map, pos);
-  if(node == NULL) return STATE_NULL;
-  return ship_contains((Ship*)(node->data), pos);
+  if(node == NULL) return EMPTY;
+  return ship_contains((ShipLine*)(node->data), pos);
 }
 
 int player_register_hit(Player* player, Vec2 pos)
 {
   QT_Node* node = qt_find(player->map, pos);
   if(node == NULL) return 0;
-  return ship_register_hit((Ship*)node->data, pos);
+  return ship_register_hit((ShipLine*)node->data, pos);
 }
 
 int player_is_over(Player* player)
