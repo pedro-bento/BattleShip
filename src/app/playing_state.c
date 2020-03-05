@@ -34,37 +34,15 @@ State* playing_state_create(Game* game, SDL_Renderer* renderer)
   SDL_Color text_color = {255, 255, 255};
   SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Shoot player 1!", text_color);
   SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
-  data->text1.text = message;
-  data->text1.pos_rect.x = SCREEN_WIDTH/2-200;
-  data->text1.pos_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-60;
-  data->text1.pos_rect.w = 400;
-  data->text1.pos_rect.h = 60;
 
-  data->text1.text_rect.x = SCREEN_WIDTH/2-190;
-  data->text1.text_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-50;
-  data->text1.text_rect.w = 380;
-  data->text1.text_rect.h = 40;
-
-  data->text1.backgroud_color.r = 0;
-  data->text1.backgroud_color.g = 0;
-  data->text1.backgroud_color.b = 0;
+  data->text1 = textbox(vec2(SCREEN_WIDTH * 0.875, SCREEN_HEIGHT * 0.085),
+    180, 60, 10, (SDL_Color){.r = 0, .g = 0, .b = 0}, message);
 
   SDL_Surface* surface2 = TTF_RenderText_Solid(ubuntu_mono, "Shoot player 2!", text_color);
   SDL_Texture* message2 = SDL_CreateTextureFromSurface(renderer, surface2);
-  data->text2.text = message2;
-  data->text2.pos_rect.x = SCREEN_WIDTH/2-200;
-  data->text2.pos_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-60;
-  data->text2.pos_rect.w = 400;
-  data->text2.pos_rect.h = 60;
 
-  data->text2.text_rect.x = SCREEN_WIDTH/2-190;
-  data->text2.text_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-50;
-  data->text2.text_rect.w = 380;
-  data->text2.text_rect.h = 40;
-
-  data->text2.backgroud_color.r = 0;
-  data->text2.backgroud_color.g = 0;
-  data->text2.backgroud_color.b = 0;
+  data->text2 = textbox(vec2(SCREEN_WIDTH * 0.875, SCREEN_HEIGHT * 0.085),
+    180, 60, 10, (SDL_Color){.r = 0, .g = 0, .b = 0}, message2);
 
   data->current_player = PLAYER1;
 

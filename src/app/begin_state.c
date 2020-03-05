@@ -25,44 +25,19 @@ State* begin_state_create(SDL_Renderer* renderer)
 
   TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
   SDL_Color text_color = {255, 255, 255};
+  SDL_Color backgroud_color = {0, 0, 0};
 
   SDL_Surface* surface_classic = TTF_RenderText_Solid(ubuntu_mono, "classic", text_color);
   SDL_Texture* classic_message = SDL_CreateTextureFromSurface(renderer, surface_classic);
 
-  data->classic.pos_rect.x = SCREEN_WIDTH/2-90;
-  data->classic.pos_rect.y = SCREEN_HEIGHT/3-30;
-  data->classic.pos_rect.w = 180;
-  data->classic.pos_rect.h = 60;
-
-  data->classic.text_rect.x = SCREEN_HEIGHT/2-80;
-  data->classic.text_rect.y = SCREEN_HEIGHT/3-20;
-  data->classic.text_rect.w = 160;
-  data->classic.text_rect.h = 40;
-
-  data->classic.text = classic_message;
-
-  data->classic.color.r = 0;
-  data->classic.color.g = 0;
-  data->classic.color.b = 0;
+  data->classic = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.2),
+    180, 60, 10, backgroud_color, classic_message);
 
   SDL_Surface* surface_custom = TTF_RenderText_Solid(ubuntu_mono, "custom", text_color);
   SDL_Texture* custom_message = SDL_CreateTextureFromSurface(renderer, surface_custom);
 
-  data->custom.pos_rect.x = SCREEN_WIDTH/2-90;
-  data->custom.pos_rect.y = (1.5 * SCREEN_HEIGHT)/3-30;
-  data->custom.pos_rect.w = 180;
-  data->custom.pos_rect.h = 60;
-
-  data->custom.text_rect.x = SCREEN_HEIGHT/2-80;
-  data->custom.text_rect.y = (1.5 * SCREEN_HEIGHT)/3-20;
-  data->custom.text_rect.w = 160;
-  data->custom.text_rect.h = 40;
-
-  data->custom.text = custom_message;
-
-  data->custom.color.r = 0;
-  data->custom.color.g = 0;
-  data->custom.color.b = 0;
+  data->custom = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
+    180, 60, 10, backgroud_color, custom_message);
 
   data->next = 0;
 
@@ -70,6 +45,7 @@ State* begin_state_create(SDL_Renderer* renderer)
   begin->render = &begin_render;
   begin->handle_event = &begin_handle_event;
   begin->update = &begin_update;
+
   return begin;
 }
 

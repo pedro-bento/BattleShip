@@ -4,12 +4,12 @@
 // #define NDEBUG
 
 // acording to BattleShip rules
-#define MAP_LENGTH 8
+#define MAP_LENGTH 10
 #define NUM_OF_SHIPS 1
 
-#define SCREEN_WIDTH 600
+#define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
-#define FOOTER_HEIGHT (SCREEN_WIDTH/10)
-#define CELL_WIDTH (SCREEN_WIDTH / MAP_LENGTH)
+static const int CELL_WIDTH = SCREEN_WIDTH < SCREEN_HEIGHT ?
+  (SCREEN_WIDTH / MAP_LENGTH) : (SCREEN_HEIGHT / MAP_LENGTH);
 
 #endif // CONFIG_H

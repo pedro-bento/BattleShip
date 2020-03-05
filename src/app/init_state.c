@@ -39,22 +39,11 @@ State* init_state_create(Game* game, SDL_Renderer* renderer)
 
   TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
   SDL_Color text_color = {255, 255, 255};
-  SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Place your ships, Player 1!", text_color);
+  SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Player 1!", text_color);
   SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
-  data->text.text = message;
-  data->text.pos_rect.x = SCREEN_WIDTH/2-200;
-  data->text.pos_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-60;
-  data->text.pos_rect.w = 400;
-  data->text.pos_rect.h = 60;
 
-  data->text.text_rect.x = SCREEN_WIDTH/2-190;
-  data->text.text_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-50;
-  data->text.text_rect.w = 380;
-  data->text.text_rect.h = 40;
-
-  data->text.backgroud_color.r = 0;
-  data->text.backgroud_color.g = 0;
-  data->text.backgroud_color.b = 0;
+  data->text = textbox(vec2(SCREEN_WIDTH * 0.875, SCREEN_HEIGHT * 0.085),
+    150, 60, 10, (SDL_Color){.r = 0, .g = 0, .b = 0}, message);
 
   data->ship_length[0] = 5;
   data->ship_length[1] = 4;
@@ -150,22 +139,9 @@ int init_update(State* s, SDL_Renderer* renderer)
 
       TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
       SDL_Color text_color = {255, 255, 255};
-      SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Place your ships, Player 2!", text_color);
+      SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Player 2!", text_color);
       SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
       ((InitData*)s->data)->text.text = message;
-      ((InitData*)s->data)->text.pos_rect.x = SCREEN_WIDTH/2-200;
-      ((InitData*)s->data)->text.pos_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-60;
-      ((InitData*)s->data)->text.pos_rect.w = 400;
-      ((InitData*)s->data)->text.pos_rect.h = 60;
-
-      ((InitData*)s->data)->text.text_rect.x = SCREEN_WIDTH/2-190;
-      ((InitData*)s->data)->text.text_rect.y = SCREEN_HEIGHT+FOOTER_HEIGHT-50;
-      ((InitData*)s->data)->text.text_rect.w = 380;
-      ((InitData*)s->data)->text.text_rect.h = 40;
-
-      ((InitData*)s->data)->text.backgroud_color.r = 0;
-      ((InitData*)s->data)->text.backgroud_color.g = 0;
-      ((InitData*)s->data)->text.backgroud_color.b = 0;
     }
     else return 1;
   }
