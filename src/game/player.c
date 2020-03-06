@@ -34,7 +34,7 @@ int player_is_valid_ship(Player* player, Ship* ship)
   // checks if it is inside the map boundary
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
      p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
-     return 0;
+       return 0;
 
   p1 = ship->line2->front;
   p2 = ship->line2->back;
@@ -55,9 +55,12 @@ int player_is_valid_ship(Player* player, Ship* ship)
 
 Ship* player_create_random_ship(Player* player, int ship_length)
 {
-  Ship* ship = ship_create(I, ship_length);
+  Vec2 dxy;
+  Ship* ship = ship_create(Z, ship_length);
   do{
-    ship_move(ship, vec2(rdn_range(0, MAP_LENGTH-1), rdn_range(0, MAP_LENGTH-1)));
+    dxy = sub(vec2(rdn_range(0, MAP_LENGTH-1), rdn_range(0, MAP_LENGTH-1)),
+              ship->line1->front);
+    ship_move(ship, dxy);
     size_t num_rots = rdn_range(0, 4);
     for(size_t i = 0; i < num_rots; ++i)
       ship_rotate_counterclockwise(ship);

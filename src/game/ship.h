@@ -10,21 +10,27 @@ typedef enum
 {
  // ####
  I,
+
  // #
  // ###
  J,
+
  //   #
  // ###
  L,
+
  // ##
  // ##
  O,
+
  //  ##
  // ##
  S,
+
  //  #
  // ###
  T,
+ 
  // ##
  //  ##
  Z,
@@ -58,6 +64,7 @@ int ship_register_hit(Ship* ship, Vec2 point);
 int ship_intersect(Ship* ship1, Ship* ship2);
 // moves the ship
 void ship_move(Ship* ship, Vec2 dxy);
+void ship_move_pos(Ship* ship, Vec2 pos);
 // rotates ship where front is the pivot counterclockwise
 void ship_rotate_counterclockwise(Ship* ship);
 // rotates ship where front is the pivot clockwise

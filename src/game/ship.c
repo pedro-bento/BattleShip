@@ -16,6 +16,52 @@ Ship* ship_create(ShipType type, size_t length)
      ship->line2 = ship_line_create(len);
    } break;
 
+   case J : {
+     ship->line1 = ship_line_create(2);
+     ship->line2 = ship_line_create(2);
+     ship_line_move(ship->line2, vec2(1,1));
+     ship_line_rotate_counterclockwise(ship->line2);
+   } break;
+
+   case L : {
+     ship->line1 = ship_line_create(2);
+     ship->line2 = ship_line_create(2);
+     ship_line_move(ship->line1, vec2(0,2));
+     ship_line_move(ship->line2, vec2(1,0));
+     ship_line_rotate_counterclockwise(ship->line2);
+   } break;
+
+   case O : {
+     ship->line1 = ship_line_create(2);
+     ship->line2 = ship_line_create(2);
+     ship_line_move(ship->line2, vec2(0,1));
+   } break;
+
+   case S : {
+     ship->line1 = ship_line_create(2);
+     ship->line2 = ship_line_create(2);
+     ship_line_move(ship->line1, vec2(0,1));
+     ship_line_rotate_counterclockwise(ship->line1);
+     ship_line_move(ship->line2, vec2(1,0));
+     ship_line_rotate_counterclockwise(ship->line2);
+   } break;
+
+   case T : {
+     ship->line1 = ship_line_create(1);
+     ship->line2 = ship_line_create(3);
+     ship_line_move(ship->line1, vec2(0,1));
+     ship_line_move(ship->line2, vec2(1,0));
+     ship_line_rotate_counterclockwise(ship->line2);
+   } break;
+
+   case Z : {
+     ship->line1 = ship_line_create(2);
+     ship->line2 = ship_line_create(2);
+     ship_line_rotate_counterclockwise(ship->line1);
+     ship_line_move(ship->line2, vec2(1,1));
+     ship_line_rotate_counterclockwise(ship->line2);
+   } break;
+
    default : return NULL;
   }
 
@@ -61,6 +107,12 @@ void ship_move(Ship* ship, Vec2 dxy)
 {
   ship_line_move(ship->line1, dxy);
   ship_line_move(ship->line2, dxy);
+}
+
+void ship_move_pos(Ship* ship, Vec2 pos)
+{
+  ship_line_move_pos(ship->line1, pos);
+  ship_line_move_pos(ship->line2, pos);
 }
 
 void ship_rotate_counterclockwise(Ship* ship)

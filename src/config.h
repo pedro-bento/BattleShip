@@ -4,8 +4,8 @@
 // #define NDEBUG
 
 // acording to BattleShip rules
-#define MAP_LENGTH 10
-#define NUM_OF_SHIPS 1
+#define MAP_LENGTH 12
+#define NUM_OF_SHIPS 3
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600

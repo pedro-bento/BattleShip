@@ -159,8 +159,8 @@ void move_ship(Game* game, Ship* ship, Vec2 dxy)
 
   Vec2 p1 = ship->line1->front;
   Vec2 p2 = ship->line1->back;
-  Vec2 q1 = ship->line1->front;
-  Vec2 q2 = ship->line1->back;
+  Vec2 q1 = ship->line2->front;
+  Vec2 q2 = ship->line2->back;
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
      p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH ||
      q1.x < 0 || q1.x >= MAP_LENGTH || q1.y < 0 || q1.y >= MAP_LENGTH ||
@@ -184,8 +184,8 @@ void rotate_ship(Game* game, Ship* ship, Rotate_func func)
 
   Vec2 p1 = ship->line1->front;
   Vec2 p2 = ship->line1->back;
-  Vec2 q1 = ship->line1->front;
-  Vec2 q2 = ship->line1->back;
+  Vec2 q1 = ship->line2->front;
+  Vec2 q2 = ship->line2->back;
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
      p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH ||
      q1.x < 0 || q1.x >= MAP_LENGTH || q1.y < 0 || q1.y >= MAP_LENGTH ||

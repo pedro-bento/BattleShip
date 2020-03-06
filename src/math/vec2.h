@@ -29,6 +29,12 @@ static inline Vec2 add(Vec2 u, Vec2 v)
   return e;
 }
 
+static inline Vec2 sub(Vec2 u, Vec2 v)
+{
+  Vec2 e = {u.x - v.x, u.y - v.y};
+  return e;
+}
+
 static inline int equal(Vec2 u, Vec2 v)
 {
   return u.x == v.x && u.y == v.y;
