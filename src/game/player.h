@@ -9,7 +9,7 @@
 
 typedef struct
 {
-  ShipLine* ships[NUM_OF_SHIPS];
+  Ship* ships[NUM_OF_SHIPS];
   QT* map;
 } Player;
 
@@ -22,12 +22,12 @@ void player_free(Player* player);
 
 // checks if ship exists on top of any artifact or outside of the map
 // retuns 1 if valid, otherwise 0
-int player_is_valid_ship(Player* player, ShipLine* ship);
+int player_is_valid_ship(Player* player, Ship* ship);
 // returns a random and valid ship
-ShipLine* player_create_random_ship(Player* player, int ship_length); // it probably can be improved
+Ship* player_create_random_ship(Player* player, int ship_length); // it probably can be improved
 // adds a ship to the map and ships array;
 // returns 1 if successful, 0 if ship is invalid or ships array is full
-int player_add_ship(Player* player, ShipLine* ship);
+int player_add_ship(Player* player, Ship* ship);
 // if a ship exists at position "pos" returns it's state, otherwise STATE_NULL
 ShipState player_get_map_state(Player* player, Vec2 pos);
 

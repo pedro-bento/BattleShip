@@ -48,7 +48,7 @@ void render_game_player(SDL_Renderer* renderer, Game* game, GamePlayer player)
   render_ships(renderer, game, player, 0);
 }
 
-void render_ship(SDL_Renderer* renderer, ShipLine* ship)
+void render_ship(SDL_Renderer* renderer, Ship* ship)
 {
   for(int x = 0; x < MAP_LENGTH; ++x)
     for(int y = 0; y < MAP_LENGTH; ++y)

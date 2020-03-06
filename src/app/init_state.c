@@ -8,11 +8,11 @@
 // init current player
 void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
 // handles inputs & returns 1 if ship is placed
-int  player_init_handle_events(Game* game, SDL_Keycode key, ShipLine* ship);
+int  player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
 
-typedef void (*Rotate_func)(ShipLine* ship);
-void move_ship(Game* game, ShipLine* ship, Vec2 dxy);
-void rotate_ship(Game* game, ShipLine* ship, Rotate_func func);
+typedef void (*Rotate_func)(Ship* ship);
+void move_ship(Game* game, Ship* ship, Vec2 dxy);
+void rotate_ship(Game* game, Ship* ship, Rotate_func func);
 
 typedef struct
 {
@@ -20,7 +20,7 @@ typedef struct
   TextBox text;
   GamePlayer current_player;
   int ship_length[5];
-  ShipLine* ship;
+  Ship* ship;
   int count;
 } InitData;
 
@@ -82,7 +82,7 @@ void init_render(State* s, SDL_Renderer* renderer)
 void init_handle_event(State* s, SDL_Event* e)
 {
   Game* game = ((InitData*)s->data)->game;
-  ShipLine* ship = ((InitData*)s->data)->ship;
+  Ship* ship = ((InitData*)s->data)->ship;
   GamePlayer player = ((InitData*)s->data)->current_player;
 
   if(e->type == SDL_KEYDOWN)
@@ -148,35 +148,52 @@ int init_update(State* s, SDL_Renderer* renderer)
   return 0;
 }
 
-void move_ship(Game* game, ShipLine* ship, Vec2 dxy)
+void move_ship(Game* game, Ship* ship, Vec2 dxy)
 {
-  Vec2 prev_front = ship->front;
-  Vec2 prev_back = ship->back;
+  Vec2 prev_front1 = ship->line1->front;
+  Vec2 prev_back1 = ship->line1->back;
+  Vec2 prev_front2 = ship->line2->front;
+  Vec2 prev_back2 = ship->line2->back;
 
-  ship->front = add(ship->front, dxy);
-  ship->back = add(ship->back, dxy);
+  ship_move(ship, dxy);
 
-  Vec2 p1 = ship->front;
-  Vec2 p2 = ship->back;
+  Vec2 p1 = ship->line1->front;
+  Vec2 p2 = ship->line1->back;
+  Vec2 q1 = ship->line1->front;
+  Vec2 q2 = ship->line1->back;
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
-     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH ||
+     q1.x < 0 || q1.x >= MAP_LENGTH || q1.y < 0 || q1.y >= MAP_LENGTH ||
+     q2.x < 0 || q2.x >= MAP_LENGTH || q2.y < 0 || q2.y >= MAP_LENGTH)
   {
-    ship->front = prev_front;
-    ship->back = prev_back;
+    ship->line1->front = prev_front1;
+    ship->line1->back = prev_back1;
+    ship->line2->front = prev_front2;
+    ship->line2->back = prev_back2;
   }
 }
 
-void rotate_ship(Game* game, ShipLine* ship, Rotate_func func)
+void rotate_ship(Game* game, Ship* ship, Rotate_func func)
 {
-  Vec2 prev_front = ship->front;
-  Vec2 prev_back = ship->back;
+  Vec2 prev_front1 = ship->line1->front;
+  Vec2 prev_back1 = ship->line1->back;
+  Vec2 prev_front2 = ship->line2->front;
+  Vec2 prev_back2 = ship->line2->back;
+
   func(ship);
-  Vec2 p1 = ship->front;
-  Vec2 p2 = ship->back;
+
+  Vec2 p1 = ship->line1->front;
+  Vec2 p2 = ship->line1->back;
+  Vec2 q1 = ship->line1->front;
+  Vec2 q2 = ship->line1->back;
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
-     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH ||
+     q1.x < 0 || q1.x >= MAP_LENGTH || q1.y < 0 || q1.y >= MAP_LENGTH ||
+     q2.x < 0 || q2.x >= MAP_LENGTH || q2.y < 0 || q2.y >= MAP_LENGTH)
   {
-    ship->front = prev_front;
-    ship->back = prev_back;
+    ship->line1->front = prev_front1;
+    ship->line1->back = prev_back1;
+    ship->line2->front = prev_front2;
+    ship->line2->back = prev_back2;
   }
 }

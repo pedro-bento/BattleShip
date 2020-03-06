@@ -26,10 +26,18 @@ void player_free(Player* player)
   qt_destroy(player->map);
 }
 
-int player_is_valid_ship(Player* player, ShipLine* ship)
+int player_is_valid_ship(Player* player, Ship* ship)
 {
-  Vec2 p1 = ship->front;
-  Vec2 p2 = ship->back;
+  Vec2 p1 = ship->line1->front;
+  Vec2 p2 = ship->line1->back;
+
+  // checks if it is inside the map boundary
+  if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
+     p2.x < 0 || p2.x >= MAP_LENGTH || p2.y < 0 || p2.y >= MAP_LENGTH)
+     return 0;
+
+  p1 = ship->line2->front;
+  p2 = ship->line2->back;
 
   // checks if it is inside the map boundary
   if(p1.x < 0 || p1.x >= MAP_LENGTH || p1.y < 0 || p1.y >= MAP_LENGTH ||
@@ -45,9 +53,9 @@ int player_is_valid_ship(Player* player, ShipLine* ship)
   return 1;
 }
 
-ShipLine* player_create_random_ship(Player* player, int ship_length)
+Ship* player_create_random_ship(Player* player, int ship_length)
 {
-  ShipLine* ship = ship_create(ship_length);
+  Ship* ship = ship_create(I, ship_length);
   do{
     ship_move(ship, vec2(rdn_range(0, MAP_LENGTH-1), rdn_range(0, MAP_LENGTH-1)));
     size_t num_rots = rdn_range(0, 4);
@@ -57,7 +65,7 @@ ShipLine* player_create_random_ship(Player* player, int ship_length)
   return ship;
 }
 
-int player_add_ship(Player* player, ShipLine* ship)
+int player_add_ship(Player* player, Ship* ship)
 {
   if(!player_is_valid_ship(player, ship))
     return 0;
@@ -70,10 +78,18 @@ int player_add_ship(Player* player, ShipLine* ship)
   player->ships[id] = ship;
 
   // add to map
-  int lower_x = MIN(ship->front.x, ship->back.x);
-  int upper_x = MAX(ship->front.x, ship->back.x);
-  int lower_y = MIN(ship->front.y, ship->back.y);
-  int upper_y = MAX(ship->front.y, ship->back.y);
+  int lower_x = MIN(ship->line1->front.x, ship->line1->back.x);
+  int upper_x = MAX(ship->line1->front.x, ship->line1->back.x);
+  int lower_y = MIN(ship->line1->front.y, ship->line1->back.y);
+  int upper_y = MAX(ship->line1->front.y, ship->line1->back.y);
+  for(int x = lower_x; x <= upper_x; ++x)
+    for(int y = lower_y; y <= upper_y; ++y)
+      qt_insert(player->map, qt_node_create(vec2(x,y), (void*)ship));
+
+  lower_x = MIN(ship->line2->front.x, ship->line2->back.x);
+  upper_x = MAX(ship->line2->front.x, ship->line2->back.x);
+  lower_y = MIN(ship->line2->front.y, ship->line2->back.y);
+  upper_y = MAX(ship->line2->front.y, ship->line2->back.y);
   for(int x = lower_x; x <= upper_x; ++x)
     for(int y = lower_y; y <= upper_y; ++y)
       qt_insert(player->map, qt_node_create(vec2(x,y), (void*)ship));
@@ -85,14 +101,14 @@ ShipState player_get_map_state(Player* player, Vec2 pos)
 {
   QT_Node* node = qt_find(player->map, pos);
   if(node == NULL) return EMPTY;
-  return ship_contains((ShipLine*)(node->data), pos);
+  return ship_contains((Ship*)(node->data), pos);
 }
 
 int player_register_hit(Player* player, Vec2 pos)
 {
   QT_Node* node = qt_find(player->map, pos);
   if(node == NULL) return 0;
-  return ship_register_hit((ShipLine*)node->data, pos);
+  return ship_register_hit((Ship*)node->data, pos);
 }
 
 int player_is_over(Player* player)

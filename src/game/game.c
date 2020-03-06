@@ -17,14 +17,14 @@ void game_free(Game* game)
   player_free(&game->player2);
 }
 
-ShipLine* game_create_random_ship(Game* game, GamePlayer player, int ship_length)
+Ship* game_create_random_ship(Game* game, GamePlayer player, int ship_length)
 {
   if(player == PLAYER1)
     return player_create_random_ship(&game->player1, ship_length);
   return player_create_random_ship(&game->player2, ship_length);
 }
 
-int game_player_place_ship(Game* game, GamePlayer player, ShipLine* ship)
+int game_player_place_ship(Game* game, GamePlayer player, Ship* ship)
 {
   if(player == PLAYER1)
     return player_add_ship(&game->player1, ship);

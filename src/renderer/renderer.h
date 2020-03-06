@@ -13,7 +13,7 @@
 // renders current player board (grid and ships)
 void render_game_player(SDL_Renderer* renderer, Game* game, GamePlayer player);
 // render current position ship
-void render_ship(SDL_Renderer* renderer, ShipLine* ship);
+void render_ship(SDL_Renderer* renderer, Ship* ship);
 // renders opponents board (grid and hits)
 void render_opponent(SDL_Renderer* renderer, Game* game, GamePlayer player);
 // render current position of shot

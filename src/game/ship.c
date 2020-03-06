@@ -1,117 +1,78 @@
-#include <stdio.h>
 #include "ship.h"
 #include "../system/stacktrace.h"
 
-ShipLine* ship_create(size_t length)
+#include <stdlib.h>
+
+Ship* ship_create(ShipType type, size_t length)
 {
-  ShipLine* ship = malloc(sizeof(ShipLine));
-  ship->front = vec2(0, 0);
-  ship->back = vec2(length - 1, 0);
-  ship->states = malloc(length * sizeof(char));
-  trace_assert(ship->states);
-  for(size_t i = 0; i < length; ++i)
-    ship->states[i] = GOOD;
+  Ship* ship = malloc(sizeof(Ship));
+  trace_assert(ship);
+
+  switch(type)
+  {
+   case I : {
+     size_t len = length > 0 ? length : 4;
+     ship->line1 = ship_line_create(len);
+     ship->line2 = ship_line_create(len);
+   } break;
+
+   default : return NULL;
+  }
+
   return ship;
 }
 
-void ship_destroy(ShipLine* ship)
+void ship_destroy(Ship* ship)
 {
-  free(ship->states);
+  ship_line_destroy(ship->line1);
+  ship_line_destroy(ship->line2);
   free(ship);
 }
 
-int ship_is_over(ShipLine* ship)
+int ship_is_over(Ship* ship)
 {
-  int lower_x = MIN(ship->front.x, ship->back.x);
-  int upper_x = MAX(ship->front.x, ship->back.x);
-  int lower_y = MIN(ship->front.y, ship->back.y);
-  int upper_y = MAX(ship->front.y, ship->back.y);
-
-  size_t length = upper_x - lower_x + upper_y - lower_y + 1;
-  for(size_t i = 0; i < length; ++i)
-    if(ship->states[i] == GOOD)
-      return 0;
-  return 1;
+  return ship_line_is_over(ship->line1) && ship_line_is_over(ship->line2);
 }
 
-ShipState ship_contains(ShipLine* ship, Vec2 point)
+ShipState ship_contains(Ship* ship, Vec2 point)
 {
-  int lower_x = MIN(ship->front.x, ship->back.x);
-  int upper_x = MAX(ship->front.x, ship->back.x);
-  int lower_y = MIN(ship->front.y, ship->back.y);
-  int upper_y = MAX(ship->front.y, ship->back.y);
-
-  if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y)
-  {
-    if(lower_x == upper_x) return ship->states[point.y - lower_y];
-    else return ship->states[point.x - lower_x];
-  }
-
-  return EMPTY;
+  ShipState state = ship_line_contains(ship->line1, point);
+  if(state != EMPTY) return state;
+  state = ship_line_contains(ship->line2, point);
+  return state;
 }
 
-int ship_register_hit(ShipLine* ship, Vec2 point)
+int ship_register_hit(Ship* ship, Vec2 point)
 {
-  int lower_x = MIN(ship->front.x, ship->back.x);
-  int upper_x = MAX(ship->front.x, ship->back.x);
-  int lower_y = MIN(ship->front.y, ship->back.y);
-  int upper_y = MAX(ship->front.y, ship->back.y);
-
-  if(point.x >= lower_x && point.x <= upper_x && point.y >= lower_y && point.y <= upper_y){
-    if(lower_x == upper_x){
-      if(ship->states[point.y - lower_y] == GOOD){
-        ship->states[point.y - lower_y] = HIT;
-        return 1;
-      }
-    }else{
-      if(ship->states[point.x - lower_x] == GOOD){
-        ship->states[point.x - lower_x] = HIT;
-        return 1;
-      }
-    }
-  }
-
-  return 0;
+  int hit1 = ship_line_register_hit(ship->line1, point);
+  int hit2 = ship_line_register_hit(ship->line2, point);
+  return hit1 || hit2;
 }
 
-int ship_intersect(ShipLine* ship1, ShipLine* ship2)
+int ship_intersect(Ship* ship1, Ship* ship2)
 {
-  Vec2 p1 = vec2(MIN(ship1->front.x, ship1->back.x), MIN(ship1->front.y, ship1->back.y));
-  Vec2 p2 = vec2(MAX(ship1->front.x, ship1->back.x), MAX(ship1->front.y, ship1->back.y));
-
-  Vec2 q1 = vec2(MIN(ship2->front.x, ship2->back.x), MIN(ship2->front.y, ship2->back.y));
-  Vec2 q2 = vec2(MAX(ship2->front.x, ship2->back.x), MAX(ship2->front.y, ship2->back.y));
-
-  return (p1.y >= q1.y && p1.y <= q2.y && p1.x <= q1.x && p2.x >= q1.x) ||
-         (p1.y <= q1.y && p2.y >= q1.y && p1.x >= q1.x && p1.x <= q2.x);
+    return ship_line_intersect(ship1->line1, ship2->line1) ||
+           ship_line_intersect(ship1->line1, ship2->line2) ||
+           ship_line_intersect(ship1->line2, ship2->line1) ||
+           ship_line_intersect(ship1->line2, ship2->line2);
 }
 
-void ship_move(ShipLine* ship, Vec2 pos)
+void ship_move(Ship* ship, Vec2 dxy)
 {
-  ship->back.x += pos.x - ship->front.x;
-  ship->back.y += pos.y - ship->front.y;
-  ship->front = pos;
+  ship_line_move(ship->line1, dxy);
+  ship_line_move(ship->line2, dxy);
 }
 
-// sg can be 1 for a 90º counterclockwise rotation, otherwise -1
-void ship_rotate90(ShipLine* ship, float sg)
+void ship_rotate_counterclockwise(Ship* ship)
 {
-  ship->back.x -= ship->front.x;
-  ship->back.y -= ship->front.y;
-
-  int nx = ship->back.y * sg;
-  int ny = ship->back.x * -sg;
-
-  ship->back.x = nx + ship->front.x;
-  ship->back.y = ny + ship->front.y;
+  Vec2 pivot = ship->line1->front;
+  ship_line_rotate_counterclockwise_pivot(ship->line1, pivot);
+  ship_line_rotate_counterclockwise_pivot(ship->line2, pivot);
 }
 
-void ship_rotate_counterclockwise(ShipLine* ship)
+void ship_rotate_clockwise(Ship* ship)
 {
-  ship_rotate90(ship, -1);
-}
-
-void ship_rotate_clockwise(ShipLine* ship)
-{
-  ship_rotate90(ship, 1);
+  Vec2 pivot = ship->line1->front;
+  ship_line_rotate_clockwise_pivot(ship->line1, pivot);
+  ship_line_rotate_clockwise_pivot(ship->line2, pivot);
 }

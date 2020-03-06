@@ -19,6 +19,7 @@ FILES =\
 	src/system/stacktrace.c\
 	src/game/player.c\
 	src/ui/ui.c\
+	src/game/ship_line.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)
