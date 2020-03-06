@@ -14,8 +14,10 @@ void player_init_empty(Player* player)
 void player_init_random(Player* player)
 {
   const int ship_length[5] = {5, 4, 3, 3, 2};
+  const ShipType ship_type[7] = {I, J, L, 0, S, T, Z};
   for(size_t i = 0; i < NUM_OF_SHIPS; i++)
-    player_add_ship(player, player_create_random_ship(player, ship_length[i % 5]));
+    player_add_ship(player, player_create_random_ship(player,
+      ship_type[i % 7], ship_length[i % 5]));
 }
 
 void player_free(Player* player)
@@ -53,10 +55,10 @@ int player_is_valid_ship(Player* player, Ship* ship)
   return 1;
 }
 
-Ship* player_create_random_ship(Player* player, int ship_length)
+Ship* player_create_random_ship(Player* player, ShipType type, int ship_length)
 {
   Vec2 dxy;
-  Ship* ship = ship_create(Z, ship_length);
+  Ship* ship = ship_create(type, ship_length);
   do{
     dxy = sub(vec2(rdn_range(0, MAP_LENGTH-1), rdn_range(0, MAP_LENGTH-1)),
               ship->line1->front);

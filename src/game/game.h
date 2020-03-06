@@ -31,7 +31,7 @@ void game_init_empty(Game* game);
 void game_free(Game* game);
 
 // returns a random and valid ship for player
-Ship* game_create_random_ship(Game* game, GamePlayer player, int ship_length);
+Ship* game_create_random_ship(Game* game, GamePlayer player, ShipType type, int ship_length);
 // adds ship to player
 // returns 1 if successful, otherwise 0
 int game_player_place_ship(Game* game, GamePlayer player, Ship* ship);

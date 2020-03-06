@@ -109,12 +109,6 @@ void ship_move(Ship* ship, Vec2 dxy)
   ship_line_move(ship->line2, dxy);
 }
 
-void ship_move_pos(Ship* ship, Vec2 pos)
-{
-  ship_line_move_pos(ship->line1, pos);
-  ship_line_move_pos(ship->line2, pos);
-}
-
 void ship_rotate_counterclockwise(Ship* ship)
 {
   Vec2 pivot = ship->line1->front;
