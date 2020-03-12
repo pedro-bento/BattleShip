@@ -19,8 +19,6 @@ typedef struct
   Game* game;
   TextBox text;
   GamePlayer current_player;
-  int ship_length[5];
-  ShipType ship_type[7];
   Ship* ship;
   int count;
 } InitData;
@@ -46,24 +44,10 @@ State* init_state_create(Game* game, SDL_Renderer* renderer)
   data->text = textbox(vec2(SCREEN_WIDTH * 0.875, SCREEN_HEIGHT * 0.085),
     150, 60, 10, (SDL_Color){.r = 0, .g = 0, .b = 0}, message);
 
-  data->ship_length[0] = 5;
-  data->ship_length[1] = 4;
-  data->ship_length[2] = 3;
-  data->ship_length[3] = 3;
-  data->ship_length[4] = 2;
-
-  data->ship_type[0] = I;
-  data->ship_type[1] = J;
-  data->ship_type[2] = L;
-  data->ship_type[3] = O;
-  data->ship_type[4] = S;
-  data->ship_type[5] = T;
-  data->ship_type[6] = Z;
-
   data->current_player = PLAYER1;
   data->count = 0;
   data->ship = game_create_random_ship(game, data->current_player,
-    data->ship_type[data->count], data->ship_length[data->count]);
+    ship_type[data->count], ship_length[data->count]);
 
   init->data = (void*)data;
   init->render = &init_render;
@@ -128,8 +112,8 @@ void init_handle_event(State* s, SDL_Event* e)
         {
           ((InitData*)s->data)->count++;
           ((InitData*)s->data)->ship = game_create_random_ship(game, player,
-            ((InitData*)s->data)->ship_type[((InitData*)s->data)->count % 7],
-            ((InitData*)s->data)->ship_length[((InitData*)s->data)->count % 5]);
+            ship_type[((InitData*)s->data)->count % 7],
+            ship_length[((InitData*)s->data)->count % 5]);
         }
       } break;
     }
@@ -146,8 +130,8 @@ int init_update(State* s, SDL_Renderer* renderer)
       ((InitData*)s->data)->count = 0;
       ((InitData*)s->data)->ship = game_create_random_ship(
         ((InitData*)s->data)->game, ((InitData*)s->data)->current_player,
-        ((InitData*)s->data)->ship_type[((InitData*)s->data)->count % 7],
-        ((InitData*)s->data)->ship_length[((InitData*)s->data)->count % 5]);
+        ship_type[((InitData*)s->data)->count % 7],
+        ship_length[((InitData*)s->data)->count % 5]);
 
       TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
       SDL_Color text_color = {255, 255, 255};
