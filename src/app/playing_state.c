@@ -3,6 +3,7 @@
 #include "../renderer/renderer.h"
 #include "../ui/ui.h"
 #include "../system/stacktrace.h"
+#include "end_state.h"
 
 // handles inputs & returns new position of shot
 Vec2 playing_handle_events(Game* game, GamePlayer* player, SDL_Keycode key, Vec2 shot);
@@ -19,7 +20,7 @@ typedef struct
 
 void playing_render(State* s, SDL_Renderer* renderer);
 void playing_handle_event(State* s, SDL_Event* e);
-int playing_update(State* s, SDL_Renderer* renderer);
+State* playing_update(State* s, SDL_Renderer* renderer);
 
 State* playing_state_create(Game* game, SDL_Renderer* renderer)
 {
@@ -115,12 +116,16 @@ void playing_handle_event(State* s, SDL_Event* e)
   }
 }
 
-int playing_update(State* s, SDL_Renderer* renderer)
+State* playing_update(State* s, SDL_Renderer* renderer)
 {
   (void)renderer;
+
   if(((PlayingData*)s->data)->game->state == PLAYING)
-    return 0;
-  return 1;
+    return s;
+
+  Game* game =  ((PlayingData*)s->data)->game;
+  playing_state_destroy(s);
+  return end_state_create(game);
 }
 
 Vec2 move_shot(Vec2 vec, Vec2 dxy)

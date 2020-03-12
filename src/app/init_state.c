@@ -4,6 +4,7 @@
 #include "../renderer/renderer.h"
 #include "../ui/ui.h"
 #include "../system/stacktrace.h"
+#include "playing_state.h"
 
 // init current player
 void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
@@ -25,7 +26,7 @@ typedef struct
 
 void init_render(State* s, SDL_Renderer* renderer);
 void init_handle_event(State* s, SDL_Event* e);
-int init_update(State* s, SDL_Renderer* renderer);
+State* init_update(State* s, SDL_Renderer* renderer);
 
 State* init_state_create(Game* game, SDL_Renderer* renderer)
 {
@@ -120,12 +121,10 @@ void init_handle_event(State* s, SDL_Event* e)
   }
 }
 
-int init_update(State* s, SDL_Renderer* renderer)
+State* init_update(State* s, SDL_Renderer* renderer)
 {
-  if(((InitData*)s->data)->count >= NUM_OF_SHIPS)
-  {
-    if(((InitData*)s->data)->current_player == PLAYER1)
-    {
+  if(((InitData*)s->data)->count >= NUM_OF_SHIPS){
+    if(((InitData*)s->data)->current_player == PLAYER1){
       ((InitData*)s->data)->current_player = PLAYER2;
       ((InitData*)s->data)->count = 0;
       ((InitData*)s->data)->ship = game_create_random_ship(
@@ -138,10 +137,13 @@ int init_update(State* s, SDL_Renderer* renderer)
       SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Player 2!", text_color);
       SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
       ((InitData*)s->data)->text.text = message;
+    }else{
+      Game* game = ((InitData*)s->data)->game;
+      init_state_destroy(s);
+      return playing_state_create(game, renderer);
     }
-    else return 1;
   }
-  return 0;
+  return s;
 }
 
 void move_ship(Game* game, Ship* ship, Vec2 dxy)

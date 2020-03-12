@@ -25,10 +25,16 @@ typedef struct
   Game_State state;
 } Game;
 
-// initializes empty players
-void game_init_empty(Game* game);
+// allocates Game object
+// default values: same as game_init_empty
+Game* game_create();
+// deallocates game and players
+void game_destroy(Game* game);
+
 // frees players
 void game_free(Game* game);
+// initializes empty players
+void game_init_empty(Game* game);
 
 // returns a random and valid ship for player
 Ship* game_create_random_ship(Game* game, GamePlayer player, ShipType type, int ship_length);

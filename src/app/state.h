@@ -6,8 +6,8 @@
 typedef struct State State;
 typedef void (*Render)(State*, SDL_Renderer*);
 typedef void (*HandleEvent)(State*, SDL_Event*);
-// return 1 if should go to next state
-typedef int (*Update)(State*,SDL_Renderer*);
+// returns next state if should go to next state, otherwise self
+typedef State* (*Update)(State*,SDL_Renderer*);
 struct State
 {
   void* data;

@@ -3,18 +3,33 @@
 #include <stdio.h>
 
 #include "../math/vec2.h"
+#include "../system/stacktrace.h"
 
-void game_init_empty(Game* game)
+Game* game_create()
 {
-  player_init_empty(&game->player1);
-  player_init_empty(&game->player2);
-  game->state = PLAYING;
+  Game* game = malloc(sizeof(Game));
+  trace_assert(game);
+  game_init_empty(game);
+  return game;
+}
+
+void game_destroy(Game* game)
+{
+  game_free(game);
+  free(game);
 }
 
 void game_free(Game* game)
 {
   player_free(&game->player1);
   player_free(&game->player2);
+}
+
+void game_init_empty(Game* game)
+{
+  player_init_empty(&game->player1);
+  player_init_empty(&game->player2);
+  game->state = PLAYING;
 }
 
 Ship* game_create_random_ship(Game* game, GamePlayer player, ShipType type, int ship_length)
@@ -33,15 +48,11 @@ int game_player_place_ship(Game* game, GamePlayer player, Ship* ship)
 
 void game_player_shoot(Game* game, GamePlayer player, Vec2 pos)
 {
-  if(player == PLAYER1)
-  {
+  if(player == PLAYER1){
     if(player_register_hit(&game->player2, pos))
       if(player_is_over(&game->player2))
         game->state = PLAYER1_WIN;
-  }
-
-  else
-  {
+  }else{
     if(player_register_hit(&game->player1, pos))
       if(player_is_over(&game->player1))
         game->state = PLAYER2_WIN;

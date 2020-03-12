@@ -9,7 +9,7 @@ typedef struct
 
 void end_render(State* s, SDL_Renderer* renderer);
 void end_handle_event(State* s, SDL_Event* e);
-int end_update(State* s, SDL_Renderer* renderer);
+State* end_update(State* s, SDL_Renderer* renderer);
 
 State* end_state_create(Game* game)
 {
@@ -44,9 +44,12 @@ void end_render(State* s, SDL_Renderer* renderer)
 
 void end_handle_event(State* s, SDL_Event* e)
 {
+  (void)s;
+  (void)e;
 }
 
-int end_update(State* s, SDL_Renderer* renderer)
+State* end_update(State* s, SDL_Renderer* renderer)
 {
-  return 0;
+  (void)renderer;
+  return s;
 }

@@ -4,6 +4,8 @@
 #include "../ui/ui.h"
 #include "../config.h"
 #include "../system/stacktrace.h"
+#include "init_state.h"
+#include "../game/game.h"
 
 typedef struct
 {
@@ -14,7 +16,7 @@ typedef struct
 
 void begin_render(State* s, SDL_Renderer* renderer);
 void begin_handle_event(State* s, SDL_Event* e);
-int begin_update(State* s, SDL_Renderer* renderer);
+State* begin_update(State* s, SDL_Renderer* renderer);
 
 State* begin_state_create(SDL_Renderer* renderer)
 {
@@ -72,8 +74,14 @@ void begin_handle_event(State* s, SDL_Event* e)
       ((BeginData*)s->data)->next = 1;
 }
 
-int begin_update(State* s, SDL_Renderer* renderer)
+State* begin_update(State* s, SDL_Renderer* renderer)
 {
-  (void)renderer;
-  return ((BeginData*)s->data)->next;
+  if(((BeginData*)s->data)->next)
+  {
+    begin_state_destroy(s);
+    Game* game = game_create();
+    return init_state_create(game, renderer);
+  }
+
+  return s;
 }
