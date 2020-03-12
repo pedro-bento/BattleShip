@@ -1,7 +1,7 @@
 PKGS = sdl2 SDL2_ttf
 
 CC = gcc
-CFLAGS = -Wall $(shell pkg-config --cflags $(PKGS))
+CFLAGS = -std=c99 -Wall $(shell pkg-config --cflags $(PKGS))
 
 LIBS = $(shell pkg-config --libs $(PKGS)) -lm
 
