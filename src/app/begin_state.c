@@ -10,7 +10,7 @@
 typedef struct
 {
   Button classic;
-  Button custom;
+  Button tetris;
   int next;
 } BeginData;
 
@@ -35,11 +35,11 @@ State* begin_state_create(SDL_Renderer* renderer)
   data->classic = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.2),
     180, 60, 10, backgroud_color, classic_message);
 
-  SDL_Surface* surface_custom = TTF_RenderText_Solid(ubuntu_mono, "custom", text_color);
-  SDL_Texture* custom_message = SDL_CreateTextureFromSurface(renderer, surface_custom);
+  SDL_Surface* surface_tetris = TTF_RenderText_Solid(ubuntu_mono, "tetris", text_color);
+  SDL_Texture* tetris_message = SDL_CreateTextureFromSurface(renderer, surface_tetris);
 
-  data->custom = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
-    180, 60, 10, backgroud_color, custom_message);
+  data->tetris = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
+    180, 60, 10, backgroud_color, tetris_message);
 
   data->next = 0;
 
@@ -63,15 +63,21 @@ void begin_render(State* s, SDL_Renderer* renderer)
   SDL_RenderClear(renderer);
   BeginData* data = (BeginData*)s->data;
   button_render(&data->classic, renderer);
-  button_render(&data->custom, renderer);
+  button_render(&data->tetris, renderer);
   SDL_RenderPresent(renderer);
 }
 
 void begin_handle_event(State* s, SDL_Event* e)
 {
-  if(e->type == SDL_MOUSEBUTTONDOWN)
-    if(button_isClick(&((BeginData*)s->data)->classic, vec2(e->button.x, e->button.y)))
+  if(e->type == SDL_MOUSEBUTTONDOWN){
+    if(button_isClick(&((BeginData*)s->data)->classic, vec2(e->button.x, e->button.y))){
       ((BeginData*)s->data)->next = 1;
+      config_classic();
+    }else if(button_isClick(&((BeginData*)s->data)->tetris, vec2(e->button.x, e->button.y))){
+      ((BeginData*)s->data)->next = 1;
+      config_tetris();
+    }
+  }
 }
 
 State* begin_update(State* s, SDL_Renderer* renderer)

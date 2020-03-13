@@ -20,6 +20,7 @@ FILES =\
 	src/game/player.c\
 	src/ui/ui.c\
 	src/game/ship_line.c\
+	src/config.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)

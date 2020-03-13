@@ -9,7 +9,7 @@
 
 typedef struct
 {
-  Ship* ships[NUM_OF_SHIPS];
+  Ship** ships;
   QT* map;
 } Player;
 

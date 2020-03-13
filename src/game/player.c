@@ -1,4 +1,5 @@
 #include "player.h"
+#include "../system/stacktrace.h"
 
 // returns the first ships index that is NULL, -1 if none
 // maybe store curr_index in variable to have O(1) complexity?
@@ -6,8 +7,12 @@ int player_get_ships_index(Player* player);
 
 void player_init_empty(Player* player)
 {
+  player->ships = malloc(NUM_OF_SHIPS * sizeof(Ship));
+  trace_assert(player->ships);
+
   for(size_t i = 0; i < NUM_OF_SHIPS; i++)
     player->ships[i] = NULL;
+
   player->map = qt_create(vec2(0,0), vec2(MAP_LENGTH, MAP_LENGTH));
 }
 
