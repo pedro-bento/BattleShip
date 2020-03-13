@@ -29,4 +29,16 @@ typedef struct
 TextBox textbox(Vec2 pos, int width, int height, int padding, SDL_Color color, SDL_Texture* text);
 void textbox_render(const TextBox* textbox, SDL_Renderer* renderer);
 
+typedef struct
+{
+  int drag;
+  float value;
+  float max_value;
+  SDL_Rect pos_rect;
+} Slider;
+
+Slider slider(Vec2 pos, int width, int height, int max_value);
+void slider_render(const Slider* slider, SDL_Renderer* renderer);
+void slider_drag(Slider* slider, SDL_Event* e);
+
 #endif

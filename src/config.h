@@ -9,8 +9,6 @@ typedef struct
   ShipType type;
 } ShipTemplate;
 
-// #define NDEBUG
-
 #define MAX_NUM_OF_SHIPS 64
 
 extern int MAP_LENGTH;

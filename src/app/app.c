@@ -7,9 +7,6 @@
 #include "../renderer/renderer.h"
 #include "state.h"
 #include "begin_state.h"
-#include "init_state.h"
-#include "playing_state.h"
-#include "end_state.h"
 
 void app_run()
 {
