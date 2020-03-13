@@ -48,7 +48,7 @@ State* init_state_create(Game* game, SDL_Renderer* renderer)
   data->current_player = PLAYER1;
   data->count = 0;
   data->ship = game_create_random_ship(game, data->current_player,
-    ship_type[data->count], ship_length[data->count]);
+    ship_templates[data->count].type, ship_templates[data->count].length);
 
   init->data = (void*)data;
   init->render = &init_render;
@@ -113,8 +113,8 @@ void init_handle_event(State* s, SDL_Event* e)
         {
           ((InitData*)s->data)->count++;
           ((InitData*)s->data)->ship = game_create_random_ship(game, player,
-            ship_type[((InitData*)s->data)->count % 7],
-            ship_length[((InitData*)s->data)->count % 5]);
+            ship_templates[((InitData*)s->data)->count].type,
+            ship_templates[((InitData*)s->data)->count].length);
         }
       } break;
     }
@@ -129,8 +129,8 @@ State* init_update(State* s, SDL_Renderer* renderer)
       ((InitData*)s->data)->count = 0;
       ((InitData*)s->data)->ship = game_create_random_ship(
         ((InitData*)s->data)->game, ((InitData*)s->data)->current_player,
-        ship_type[((InitData*)s->data)->count % 7],
-        ship_length[((InitData*)s->data)->count % 5]);
+        ship_templates[((InitData*)s->data)->count].type,
+        ship_templates[((InitData*)s->data)->count].length);
 
       TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
       SDL_Color text_color = {255, 255, 255};
