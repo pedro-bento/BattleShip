@@ -9,7 +9,7 @@ typedef struct
   ShipType type;
 } ShipTemplate;
 
-#define MAX_NUM_OF_SHIPS 64
+#define MAX_NUM_OF_SHIPS 8
 
 extern int MAP_LENGTH;
 extern int NUM_OF_SHIPS;

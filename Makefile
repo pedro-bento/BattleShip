@@ -21,6 +21,7 @@ FILES =\
 	src/ui/ui.c\
 	src/game/ship_line.c\
 	src/config.c\
+	src/app/custom_state.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)

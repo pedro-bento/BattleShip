@@ -6,12 +6,21 @@
 #include "../system/stacktrace.h"
 #include "init_state.h"
 #include "../game/game.h"
+#include "custom_state.h"
+
+typedef enum
+{
+  CURRENT,
+  INIT,
+  CUSTOM,
+} NextState;
 
 typedef struct
 {
   Button classic;
   Button tetris;
-  int next;
+  Button custom;
+  NextState next;
 } BeginData;
 
 void begin_render(State* s, SDL_Renderer* renderer);
@@ -41,7 +50,13 @@ State* begin_state_create(SDL_Renderer* renderer)
   data->tetris = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
     180, 60, 10, backgroud_color, tetris_message);
 
-  data->next = 0;
+  SDL_Surface* surface_custom = TTF_RenderText_Solid(ubuntu_mono, "custom", text_color);
+  SDL_Texture* custom_message = SDL_CreateTextureFromSurface(renderer, surface_custom);
+
+  data->custom = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5),
+    180, 60, 10, backgroud_color, custom_message);
+
+  data->next = CURRENT;
 
   begin->data = (void*)data;
   begin->render = &begin_render;
@@ -64,6 +79,7 @@ void begin_render(State* s, SDL_Renderer* renderer)
   BeginData* data = (BeginData*)s->data;
   button_render(&data->classic, renderer);
   button_render(&data->tetris, renderer);
+  button_render(&data->custom, renderer);
   SDL_RenderPresent(renderer);
 }
 
@@ -71,22 +87,33 @@ void begin_handle_event(State* s, SDL_Event* e)
 {
   if(e->type == SDL_MOUSEBUTTONDOWN){
     if(button_isClick(&((BeginData*)s->data)->classic, vec2(e->button.x, e->button.y))){
-      ((BeginData*)s->data)->next = 1;
+      ((BeginData*)s->data)->next = INIT;
       config_classic();
     }else if(button_isClick(&((BeginData*)s->data)->tetris, vec2(e->button.x, e->button.y))){
-      ((BeginData*)s->data)->next = 1;
+      ((BeginData*)s->data)->next = INIT;
       config_tetris();
+    }else if(button_isClick(&((BeginData*)s->data)->custom, vec2(e->button.x, e->button.y))){
+      ((BeginData*)s->data)->next = CUSTOM;
     }
   }
 }
 
 State* begin_update(State* s, SDL_Renderer* renderer)
 {
-  if(((BeginData*)s->data)->next)
+  switch(((BeginData*)s->data)->next)
   {
-    begin_state_destroy(s);
-    Game* game = game_create();
-    return init_state_create(game, renderer);
+    case INIT: {
+      begin_state_destroy(s);
+      Game* game = game_create();
+      return init_state_create(game, renderer);
+    };
+
+    case CUSTOM: {
+      begin_state_destroy(s);
+      return custom_state_create();
+    };
+
+    default : break;
   }
 
   return s;

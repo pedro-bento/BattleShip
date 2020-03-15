@@ -7,6 +7,7 @@
 #include "../renderer/renderer.h"
 #include "state.h"
 #include "begin_state.h"
+#include "custom_state.h"
 
 void app_run()
 {

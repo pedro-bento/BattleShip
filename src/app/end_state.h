@@ -6,6 +6,5 @@
 #include "state.h"
 
 State* end_state_create(Game* game);
-void end_state_destroy(State* state);
 
 #endif

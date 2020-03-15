@@ -6,11 +6,6 @@
 #include "../system/stacktrace.h"
 #include "playing_state.h"
 
-// init current player
-void player_init_game_state(Game* game, GamePlayer player, SDL_Renderer* renderer, int* shouldQuit);
-// handles inputs & returns 1 if ship is placed
-int  player_init_handle_events(Game* game, SDL_Keycode key, Ship* ship);
-
 typedef void (*Rotate_func)(Ship* ship);
 void move_ship(Game* game, Ship* ship, Vec2 dxy);
 void rotate_ship(Game* game, Ship* ship, Rotate_func func);

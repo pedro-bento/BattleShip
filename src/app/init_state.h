@@ -6,6 +6,5 @@
 #include "state.h"
 
 State* init_state_create(Game* game, SDL_Renderer* renderer);
-void init_state_destroy(State* state);
 
 #endif
