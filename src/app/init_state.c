@@ -5,6 +5,7 @@
 #include "../ui/ui.h"
 #include "../system/stacktrace.h"
 #include "playing_state.h"
+#include "../config.h"
 
 typedef void (*Rotate_func)(Ship* ship);
 void move_ship(Game* game, Ship* ship, Vec2 dxy);
@@ -32,7 +33,6 @@ State* init_state_create(Game* game, SDL_Renderer* renderer)
 
   data->game = game;
 
-  TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
   SDL_Color text_color = {255, 255, 255};
   SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Player 1!", text_color);
   SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
@@ -127,7 +127,6 @@ State* init_update(State* s, SDL_Renderer* renderer)
         ship_templates[((InitData*)s->data)->count].type,
         ship_templates[((InitData*)s->data)->count].length);
 
-      TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
       SDL_Color text_color = {255, 255, 255};
       SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Player 2!", text_color);
       SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);

@@ -34,7 +34,6 @@ State* begin_state_create(SDL_Renderer* renderer)
   BeginData* data = malloc(sizeof(BeginData));
   trace_assert(data);
 
-  TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
   SDL_Color text_color = {255, 255, 255};
   SDL_Color backgroud_color = {0, 0, 0};
 

@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "../math/math.h"
+#include "../config.h"
 
 Button button(Vec2 pos, int width, int height, int padding, SDL_Color color, SDL_Texture* text)
 {
@@ -133,4 +134,33 @@ void slider_drag(Slider* slider, SDL_Event* event)
        } break;
      }
   }
+}
+
+SliderField sliderfield(Vec2 pos, int width, int height, int max_value)
+{
+  Vec2 left_pos = vec2(pos.x - height/2, pos.y);
+  Vec2 right_pos = vec2(pos.x + width/2, pos.y - height/2);
+
+  return (SliderField){
+    ._slider = slider(left_pos, width, height, max_value),
+    ._text = textbox(right_pos, height, height, height * 0.1f, (SDL_Color){0, 0, 0}, NULL),
+  };
+}
+
+void sliderfield_render(SliderField* slider_field, SDL_Renderer* renderer)
+{
+  slider_render(&slider_field->_slider, renderer);
+
+  SDL_Color text_color = {255, 255, 255};
+  char num_text[2] = {'0' + (int)slider_field->_slider.value, '\0'};
+  SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, num_text, text_color);
+  SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
+
+  slider_field->_text.text = message;
+  textbox_render(&slider_field->_text, renderer);
+}
+
+void sliderfield_drag(SliderField* slider_field, SDL_Event* e)
+{
+  slider_drag(&slider_field->_slider, e);
 }

@@ -4,6 +4,7 @@
 #include "../ui/ui.h"
 #include "../system/stacktrace.h"
 #include "end_state.h"
+#include "../config.h"
 
 // handles inputs & returns new position of shot
 Vec2 playing_handle_events(Game* game, GamePlayer* player, SDL_Keycode key, Vec2 shot);
@@ -31,7 +32,6 @@ State* playing_state_create(Game* game, SDL_Renderer* renderer)
 
   data->game = game;
 
-  TTF_Font* ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
   SDL_Color text_color = {255, 255, 255};
   SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, "Shoot player 1!", text_color);
   SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);

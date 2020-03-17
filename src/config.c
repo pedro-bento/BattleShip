@@ -4,6 +4,12 @@ int MAP_LENGTH;
 int NUM_OF_SHIPS;
 ShipTemplate ship_templates[MAX_NUM_OF_SHIPS];
 int CELL_WIDTH;
+TTF_Font* ubuntu_mono;
+
+void config_init()
+{
+  ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
+}
 
 void config_classic()
 {

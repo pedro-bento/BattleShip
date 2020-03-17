@@ -7,7 +7,7 @@
 #include "../renderer/renderer.h"
 #include "state.h"
 #include "begin_state.h"
-#include "custom_state.h"
+#include "../config.h"
 
 void app_run()
 {
@@ -15,6 +15,8 @@ void app_run()
   SDL_Window* window = SDL_CreateWindow("BattleShip", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
   SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   TTF_Init();
+
+  config_init();
 
   SDL_Event e;
   int isQuit = 0;
