@@ -43,11 +43,12 @@ void slider_drag(Slider* slider, SDL_Event* e);
 
 typedef struct
 {
-  Slider _slider;
-  TextBox _text;
+  Slider sld;
+  TextBox num;
+  TextBox text;
 } SliderField;
 
-SliderField sliderfield(Vec2 pos, int width, int height, int max_value);
+SliderField sliderfield(Vec2 pos, int width, int height, int max_value, const char* str, SDL_Renderer* renderer);
 void sliderfield_render(SliderField* slider, SDL_Renderer* renderer);
 void sliderfield_drag(SliderField* slider, SDL_Event* e);
 

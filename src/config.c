@@ -8,7 +8,7 @@ TTF_Font* ubuntu_mono;
 
 void config_init()
 {
-  ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 64);
+  ubuntu_mono = TTF_OpenFont("res/UbuntuMono-R.ttf", 200);
 }
 
 void config_classic()
@@ -38,5 +38,61 @@ void config_tetris()
   {
     ship_templates[i].length = 0;
     ship_templates[i].type = type[i];
+  }
+}
+
+void config_custom(int length, int i, int j, int l, int o, int s, int t, int z)
+{
+  MAP_LENGTH = length;
+  NUM_OF_SHIPS = i + j + l + o + s + t + z;
+  CELL_WIDTH = SCREEN_WIDTH < SCREEN_HEIGHT ? (SCREEN_WIDTH / MAP_LENGTH) : (SCREEN_HEIGHT / MAP_LENGTH);
+
+  int count = 0;
+  for(size_t k = count; k < count + i; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = I;
+  }
+  count += i;
+
+  for(size_t k = count; k < count + j; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = J;
+  }
+  count += j;
+
+  for(size_t k = count; k < count + l; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = L;
+  }
+  count += l;
+
+  for(size_t k = count; k < count + o; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = O;
+  }
+  count += o;
+
+  for(size_t k = count; k < count + s; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = S;
+  }
+  count += s;
+
+  for(size_t k = count; k < count + t; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = T;
+  }
+  count += t;
+
+  for(size_t k = count; k < count + z; k++)
+  {
+    ship_templates[k].length = 0;
+    ship_templates[k].type = Z;
   }
 }

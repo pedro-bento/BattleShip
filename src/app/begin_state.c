@@ -37,19 +37,19 @@ State* begin_state_create(SDL_Renderer* renderer)
   SDL_Color text_color = {255, 255, 255};
   SDL_Color backgroud_color = {0, 0, 0};
 
-  SDL_Surface* surface_classic = TTF_RenderText_Solid(ubuntu_mono, "classic", text_color);
+  SDL_Surface* surface_classic = TTF_RenderText_Solid(ubuntu_mono, "Classic", text_color);
   SDL_Texture* classic_message = SDL_CreateTextureFromSurface(renderer, surface_classic);
 
   data->classic = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.2),
     180, 60, 10, backgroud_color, classic_message);
 
-  SDL_Surface* surface_tetris = TTF_RenderText_Solid(ubuntu_mono, "tetris", text_color);
+  SDL_Surface* surface_tetris = TTF_RenderText_Solid(ubuntu_mono, "Tetris", text_color);
   SDL_Texture* tetris_message = SDL_CreateTextureFromSurface(renderer, surface_tetris);
 
   data->tetris = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.35),
     180, 60, 10, backgroud_color, tetris_message);
 
-  SDL_Surface* surface_custom = TTF_RenderText_Solid(ubuntu_mono, "custom", text_color);
+  SDL_Surface* surface_custom = TTF_RenderText_Solid(ubuntu_mono, "Custom", text_color);
   SDL_Texture* custom_message = SDL_CreateTextureFromSurface(renderer, surface_custom);
 
   data->custom = button(vec2(SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5),
@@ -109,7 +109,7 @@ State* begin_update(State* s, SDL_Renderer* renderer)
 
     case CUSTOM: {
       begin_state_destroy(s);
-      return custom_state_create();
+      return custom_state_create(renderer);
     };
 
     default : break;
