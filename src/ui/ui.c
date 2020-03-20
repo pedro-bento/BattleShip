@@ -157,14 +157,14 @@ void sliderfield_render(SliderField* slider_field, SDL_Renderer* renderer)
 {
   slider_render(&slider_field->sld, renderer);
 
-  SDL_Color text_color = {255, 255, 255};
+  const SDL_Color text_color = {255, 255, 255};
   char num_text[2] = {'0' + (int)slider_field->sld.value, '\0'};
-  SDL_Surface* surface = TTF_RenderText_Solid(ubuntu_mono, num_text, text_color);
-  SDL_Texture* message = SDL_CreateTextureFromSurface(renderer, surface);
-  slider_field->num.text = message;
+  SDL_Surface* surface = TTF_RenderText_Blended(ubuntu_mono, num_text, text_color);
+  slider_field->num.text = SDL_CreateTextureFromSurface(renderer, surface);
   textbox_render(&slider_field->num, renderer);
-
   textbox_render(&slider_field->text, renderer);
+  SDL_FreeSurface(surface);
+  SDL_DestroyTexture(slider_field->num.text);
 }
 
 void sliderfield_drag(SliderField* slider_field, SDL_Event* e)
