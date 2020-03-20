@@ -5,7 +5,7 @@ CFLAGS = -std=c99 -Wall $(shell pkg-config --cflags $(PKGS))
 
 LIBS = $(shell pkg-config --libs $(PKGS)) -lm
 
-FILES =\
+FILES_DEP =\
 	src/main.c\
 	src/game/ship.c\
 	src/game/game.c\
@@ -22,6 +22,12 @@ FILES =\
 	src/game/ship_line.c\
 	src/config.c\
 	src/app/custom_state.c\
+
+battleship_dep: $(FILES_DEP)
+	$(CC) $(CFLAGS) -o battleship $(FILES_DEP) $(LIBS)
+
+FILES =\
+	src1/main.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)
