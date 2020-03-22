@@ -31,7 +31,10 @@ FILES =\
 	src1/system/log.c\
 	src1/math/vec.c\
 	src1/physics/ship.c\
+	src1/physics/player.c\
+	src1/physics/game.c\
 	src1/graphics/color.c\
 	src1/graphics/renderer.c\
 
 battleship: $(FILES)
+	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)

@@ -25,6 +25,7 @@ typedef struct
   ShipState states[MAX_SHIP_WIDTH][MAX_SHIP_WIDTH];
 } Ship;
 
-void ship_rotate_90(Ship* ship, bool is_clockwise);
+void ship_move(Ship* ship, Vec2i dxy);
+void ship_rotate(Ship* ship, bool is_clockwise);
 
 #endif // SHIP_H

@@ -3,8 +3,8 @@
 
 #include <SDL.h>
 
-#include "../physics/ship.h"
+#include "../physics/player.h"
 
-void render_ship(Ship* ship, SDL_Renderer* renderer);
+void render_player(Player* player, SDL_Renderer* renderer);
 
 #endif // RENDERER_H

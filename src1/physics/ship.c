@@ -2,7 +2,13 @@
 
 #include <stdlib.h>
 
-void ship_rotate_90(Ship* ship, bool is_clockwise)
+void ship_move(Ship* ship, Vec2i dxy)
+{
+  ship->top_left     = vec2i_add(ship->top_left, dxy);
+  ship->bottom_right = vec2i_add(ship->bottom_right, dxy);
+}
+
+void ship_rotate(Ship* ship, bool is_clockwise)
 {
   ShipState new_states[MAX_SHIP_WIDTH][MAX_SHIP_WIDTH];
   Vec2i new_pos;

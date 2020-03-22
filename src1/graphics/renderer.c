@@ -3,6 +3,7 @@
 #include "../config.h"
 #include "../system/log.h"
 #include "../math/vec.h"
+#include "../physics/ship.h"
 
 void render_rects(const SDL_Rect* rects, int count, Color color, SDL_Renderer* renderer)
 {
@@ -20,11 +21,17 @@ void render_ship(Ship* ship, SDL_Renderer* renderer)
   size_t count_good = 0;
   size_t count_hit  = 0;
 
-  for(size_t x = ship->top_left.x; x <= ship->bottom_right.x; ++x)
+  const size_t begin_x = ship->top_left.x;
+  const size_t end_x   = ship->bottom_right.x;
+
+  const size_t begin_y = ship->top_left.y;
+  const size_t end_y   = ship->bottom_right.y;
+
+  for(size_t x = begin_x; x <= end_x; ++x)
   {
-    for(size_t y = ship->top_left.y; y <= ship->bottom_right.y; ++y)
+    for(size_t y = begin_y; y <= end_y; ++y)
     {
-      switch(ship->states[x][y])
+      switch(ship->states[x - begin_x][y - begin_y])
       {
         case SHIP_STATE_GOOD :{
           cells_good[count_good].x = y * CELL_SIZE;
@@ -45,4 +52,10 @@ void render_ship(Ship* ship, SDL_Renderer* renderer)
 
   render_rects(cells_good, count_good, COLOR_RADIOACTIVE_GREEN, renderer);
   render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED, renderer);
+}
+
+void render_player(Player* player, SDL_Renderer* renderer)
+{
+  for(size_t i = 0; i < player->ships_count; ++i)
+    render_ship(&player->ships[i], renderer);
 }
