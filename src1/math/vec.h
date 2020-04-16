@@ -24,6 +24,4 @@ static inline Vec2i vec2i_add(Vec2i u, Vec2i v)
   return vec2i(u.x + v.x, u.y + v.y);
 }
 
-Vec2i vec2i_rotate_90(Vec2i vec, bool is_clockwise);
-
 #endif

@@ -16,7 +16,7 @@ void render_grid(SDL_Renderer* renderer)
   {
      SDL_RenderDrawLine(renderer, i * CELL_WIDTH, 0, i * CELL_WIDTH, min);
      SDL_RenderDrawLine(renderer, 0, i * CELL_WIDTH, min, i * CELL_WIDTH);
-   }
+  }
 }
 
 void render_rect(SDL_Renderer* renderer, SDL_Rect rect, SDL_Color color)

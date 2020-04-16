@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "ship.h"
 
@@ -21,11 +22,11 @@ typedef struct
 
 typedef struct
 {
-  uint8_t ships_count;
-  Ship ships[MAX_NUMBER_OF_SHIPS];
-  Cell map[MAX_MAP_SIZE][MAX_MAP_SIZE];
+  Cell** map;
 } Player;
 
-Ship* player_get_next_ship(Player* player);
+Player* new_player(size_t map_size);
+// returns the ship state at pos of its own map
+ShipState player_get_ship_state(Player* player, Vec2i pos);
 
 #endif // PLAYER_H

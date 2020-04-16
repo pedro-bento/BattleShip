@@ -19,11 +19,35 @@ typedef enum
 
 typedef struct
 {
+  ShipState states[MAX_SHIP_WIDTH][MAX_SHIP_WIDTH];
+} Bitmap;
+
+typedef struct
+{
   Vec2i top_left;
   Vec2i bottom_right;
-  uint8_t shot_count;
-  ShipState states[MAX_SHIP_WIDTH][MAX_SHIP_WIDTH];
+  uint8_t hp;
+  Bitmap bitmap;
 } Ship;
+
+typedef enum
+{
+  F,
+  I,
+  L,
+  N,
+  P,
+  T,
+  U,
+  V,
+  W,
+  X,
+  Y,
+  Z,
+} ShipType;
+
+Ship* new_ship(ShipType type);
+void  delete_ship(Ship* ship);
 
 void ship_move(Ship* ship, Vec2i dxy);
 void ship_rotate(Ship* ship, bool is_clockwise);

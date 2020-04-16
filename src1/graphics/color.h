@@ -3,9 +3,12 @@
 
 #include <stdint.h>
 
-#define COLOR_BLACK             color(0, 0, 0, 255)
-#define COLOR_RADIOACTIVE_GREEN color(93, 202, 49, 255)
-#define COLOR_CRIMSON_RED       color(153, 0, 0, 255)
+// _A stands for alpha
+#define COLOR_BLACK                 color(0, 0, 0, 255)
+#define COLOR_RADIOACTIVE_GREEN     color(93, 202, 49, 255)
+#define COLOR_RADIOACTIVE_GREEN_A   color(93, 202, 49, 32)
+#define COLOR_CRIMSON_RED_A         color(153, 0, 0, 32)
+#define COLOR_FLUORESCENT_YELLOW_A  color(204, 255, 0, 155)
 
 typedef struct
 {
