@@ -36,6 +36,8 @@ FILES =\
 	src1/graphics/renderer.c\
 	src1/graphics/ui.c\
 	src1/states/placing_ships.c\
+	src1/states/configure_game.c\
+	src1/states/fight.c\
 
 battleship: $(FILES)
 	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)

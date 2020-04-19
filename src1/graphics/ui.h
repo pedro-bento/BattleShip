@@ -42,6 +42,7 @@ typedef struct
 
 Button button(Vec2i pos, int width, int heigh, int padding, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer);
 void render_button(Button* button, SDL_Renderer* renderer);
+bool button_isClick(Button* button, Vec2i pos);
 
 typedef struct
 {
@@ -51,6 +52,13 @@ typedef struct
   Button minus_minus;
   Button plus;
   Button puls_plus;
+  int value;
+  int min_value;
+  int max_value;
 } NumericInputBox;
+
+NumericInputBox numeric_input_box(Vec2i pos, int width, int height, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer, int min_value, int max_value);
+
+void render_numeric_input_box(NumericInputBox* nip, SDL_Renderer* renderer);
 
 #endif

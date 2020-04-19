@@ -2,12 +2,11 @@
 #define STATE_H
 
 #include <SDL.h>
-#include <stdbool.h>
 
 typedef struct State State;
 typedef void (*Render)(State*, SDL_Renderer*);
 typedef void (*HandleEvent)(State*, SDL_Event*);
-typedef bool (*Update)(State*); // returns 'true' on state change
+typedef State* (*Update)(State*); // returns next state
 struct State
 {
   void* data;

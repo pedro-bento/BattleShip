@@ -64,3 +64,12 @@ bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
 
   return true;
 }
+
+void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
+{
+  Player* opponent = game_get_player_by_id(game, flip_player_id(id));
+  ShotState shot_state = player_register_shot(opponent, shot);
+
+  Player* player = game_get_player_by_id(game, id);
+  player->map[shot.x][shot.y].shot_state = shot_state;
+}

@@ -6,6 +6,7 @@
 #include "../physics/game.h"
 #include "../graphics/renderer.h"
 #include "../graphics/ui.h"
+#include "fight.h"
 
 typedef struct
 {
@@ -16,9 +17,9 @@ typedef struct
   int current_ship_count;
 } Data;
 
-void render(State* state, SDL_Renderer* renderer);
-void handle_event(State* state, SDL_Event* event);
-bool update(State* state);
+void ps_render(State* state, SDL_Renderer* renderer);
+void ps_handle_event(State* state, SDL_Event* event);
+State* ps_update(State* state);
 
 State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* renderer)
 {
@@ -34,14 +35,20 @@ State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* ren
   data->current_ship_count = 1;
 
   state->data = data;
-  state->render = render;
-  state->handle_event = handle_event;
-  state->update = update;
+  state->render = ps_render;
+  state->handle_event = ps_handle_event;
+  state->update = ps_update;
 
   return state;
 }
 
-void render(State* state, SDL_Renderer* renderer)
+void delete_placing_ships_state(State* state)
+{
+  free(state->data);
+  free(state);
+}
+
+void ps_render(State* state, SDL_Renderer* renderer)
 {
   Settings* settings = ((Data*)state->data)->settings;
   Game* game = ((Data*)state->data)->game;
@@ -50,13 +57,15 @@ void render(State* state, SDL_Renderer* renderer)
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
+
   render_grid(renderer, settings);
   render_player(game_get_player_by_id(game, current_player_id), renderer, settings);
   render_ship_preview(ship, renderer, settings);
+
   SDL_RenderPresent(renderer);
 }
 
-void handle_event(State* state, SDL_Event* event)
+void ps_handle_event(State* state, SDL_Event* event)
 {
   Settings* settings = ((Data*)state->data)->settings;
   Ship* ship = ((Data*)state->data)->ship;
@@ -128,9 +137,14 @@ void handle_event(State* state, SDL_Event* event)
   }
 }
 
-bool update(State* state)
+State* ps_update(State* state)
 {
   if(((Data*)state->data)->current_player_id > 2)
-    return true;
-  return false;
+  {
+    Game* game = ((Data*)state->data)->game;
+    State* new_state = new_fight_state(game);
+    delete_placing_ships_state(state);
+    return new_state;
+  }
+  return state;
 }

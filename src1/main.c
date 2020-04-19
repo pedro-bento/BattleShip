@@ -12,7 +12,7 @@
 #include "physics/game.h"
 #include "graphics/renderer.h"
 #include "graphics/ui.h"
-#include "states/placing_ships.h"
+#include "states/configure_game.h"
 
 int main(int argc, char const *argv[])
 {
@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
   (void) argv;
 
   LOG_FAIL(!TTF_Init());
-  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 32);
+  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 128);
   LOG_FAIL(font);
 
   Settings settings =
@@ -42,15 +42,14 @@ int main(int argc, char const *argv[])
   LOG_FAIL(renderer);
   LOG_FAIL(!SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND));
 
-  settings.NUM_OF_SHIPS = 3;
+  settings.NUM_OF_SHIPS = 1;
   settings.MAP_SIZE = 20;
   settings.CELL_SIZE = settings.WINDOW_WIDTH < settings.WINDOW_HEIGHT ?
     settings.WINDOW_WIDTH / settings.MAP_SIZE :
     settings.WINDOW_HEIGHT / settings.MAP_SIZE;
 
-  Game* game = new_game(&settings);
-  State* state = new_placing_ships_state(&settings, game, renderer);
 
+  State* state = new_configure_game_state(&settings, renderer);
   bool quit = false;
   SDL_Event event;
   while(!quit)
@@ -68,7 +67,7 @@ int main(int argc, char const *argv[])
       state->handle_event(state, &event);
     }
 
-    if(state->update(state))
+    if((state = state->update(state)) == NULL)
       quit = true;
   }
 

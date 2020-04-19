@@ -27,9 +27,11 @@ void render_ship(Ship* ship, SDL_Renderer* renderer, Settings* settings, bool is
   // maximum number of cells a ship can occupy is the size of the bitmap
   SDL_Rect cells_good[MAX_SHIP_WIDTH * MAX_SHIP_WIDTH];
   SDL_Rect cells_hit[MAX_SHIP_WIDTH * MAX_SHIP_WIDTH];
+  SDL_Rect cells_miss[MAX_SHIP_WIDTH * MAX_SHIP_WIDTH];
 
   size_t count_good = 0;
   size_t count_hit  = 0;
+  size_t count_miss  = 0;
 
   const int begin_x = MAX(ship->top_left.x, 0);
   const int end_x   = ship->bottom_right.x;
@@ -59,17 +61,41 @@ void render_ship(Ship* ship, SDL_Renderer* renderer, Settings* settings, bool is
           cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE;
           ++count_hit;
         } break;
+
+        case SHIP_STATE_MISS :{
+          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE;
+          cells_miss[count_miss].y = x * settings->CELL_SIZE;
+          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE;
+          ++count_miss;
+        } break;
       }
     }
   }
 
   if(is_preview){
     render_rects(cells_good, count_good, COLOR_FLUORESCENT_YELLOW_A, renderer);
-    render_rects(cells_hit, count_hit, COLOR_FLUORESCENT_YELLOW_A, renderer);
   }else{
     render_rects(cells_good, count_good, COLOR_RADIOACTIVE_GREEN_A, renderer);
     render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED_A, renderer);
+    render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);
   }
+}
+
+void render_shot(Vec2i pos, SDL_Renderer* renderer, Settings* settings)
+{
+  size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t offset = (max - min) / 2;
+
+  SDL_Rect rect = {
+    .x = pos.y * settings->CELL_SIZE + offset,
+    .y = pos.x * settings->CELL_SIZE,
+    .w = settings->CELL_SIZE,
+    .h = settings->CELL_SIZE
+  };
+
+  set_render_color(COLOR_FLUORESCENT_YELLOW_A, renderer);
+  SDL_RenderFillRect(renderer, &rect);
 }
 
 void render_ship_preview(Ship* ship, SDL_Renderer* renderer, Settings* settings)
@@ -87,6 +113,46 @@ void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
         render_ship(player->map[x][y].ship, renderer, settings, false);
     }
   }
+}
+
+void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
+{
+  size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t map_offset = (max - min) / 2;
+
+  size_t max_size = settings->MAP_SIZE * settings->MAP_SIZE;
+  SDL_Rect cells_hit[max_size];
+  SDL_Rect cells_miss[max_size];
+
+  size_t count_hit  = 0;
+  size_t count_miss  = 0;
+
+  for(int x = 0; x < settings->MAP_SIZE; ++x)
+  {
+    for(int y = 0; y < settings->MAP_SIZE; ++y)
+    {
+      switch(player->map[x][y].shot_state)
+      {
+        case SHOT_STATE_HIT :{
+          cells_hit[count_hit].x = map_offset + y * settings->CELL_SIZE;
+          cells_hit[count_hit].y = x * settings->CELL_SIZE;
+          cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE;
+          ++count_hit;
+        } break;
+
+        case SHOT_STATE_MISS :{
+          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE;
+          cells_miss[count_miss].y = x * settings->CELL_SIZE;
+          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE;
+          ++count_miss;
+        } break;
+      }
+    }
+  }
+
+  render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED_A, renderer);
+  render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);
 }
 
 void render_grid(SDL_Renderer* renderer, Settings* settings)

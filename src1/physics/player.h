@@ -6,7 +6,7 @@
 
 #include "ship.h"
 
-typedef uint8_t Shot;
+typedef uint8_t ShotState;
 typedef enum
 {
   SHOT_STATE_NONE = 0,
@@ -17,7 +17,7 @@ typedef enum
 typedef struct
 {
   Ship* ship;
-  Shot shot;
+  ShotState shot_state;
 } Cell;
 
 typedef struct
@@ -28,5 +28,7 @@ typedef struct
 Player* new_player(size_t map_size);
 // returns the ship state at pos of its own map
 ShipState player_get_ship_state(Player* player, Vec2i pos);
+// registers opponent shot to its own map and returns shot state
+ShotState player_register_shot(Player* player, Vec2i pos);
 
 #endif // PLAYER_H
