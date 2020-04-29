@@ -42,13 +42,6 @@ int main(int argc, char const *argv[])
   LOG_FAIL(renderer);
   LOG_FAIL(!SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND));
 
-  settings.NUM_OF_SHIPS = 1;
-  settings.MAP_SIZE = 20;
-  settings.CELL_SIZE = settings.WINDOW_WIDTH < settings.WINDOW_HEIGHT ?
-    settings.WINDOW_WIDTH / settings.MAP_SIZE :
-    settings.WINDOW_HEIGHT / settings.MAP_SIZE;
-
-
   State* state = new_configure_game_state(&settings, renderer);
   bool quit = false;
   SDL_Event event;

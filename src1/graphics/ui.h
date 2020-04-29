@@ -22,9 +22,9 @@ typedef struct
   SDL_Rect boundary;
 } Text;
 
-Text text(Vec2i pos, int width, int heigh,
-  const char* str, TTF_Font* font, Color color, SDL_Renderer* renderer);
+Text text(Vec2i pos, int width, int heigh, const char* str, TTF_Font* font, Color color, SDL_Renderer* renderer);
 void render_text(Text* text, SDL_Renderer* renderer);
+void delete_text(Text* text);
 
 typedef struct
 {
@@ -34,6 +34,7 @@ typedef struct
 
 TextBox texbox(Vec2i pos, int width, int heigh, int padding, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer);
 void render_textbox(TextBox* textbox, SDL_Renderer* renderer);
+void delete_textbox(TextBox* textbox);
 
 typedef struct
 {
@@ -43,6 +44,7 @@ typedef struct
 Button button(Vec2i pos, int width, int heigh, int padding, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer);
 void render_button(Button* button, SDL_Renderer* renderer);
 bool button_isClick(Button* button, Vec2i pos);
+void delete_button(Button* button);
 
 typedef struct
 {
@@ -55,10 +57,13 @@ typedef struct
   int value;
   int min_value;
   int max_value;
+  Color text_color;
+  TTF_Font* font;
 } NumericInputBox;
 
-NumericInputBox numeric_input_box(Vec2i pos, int width, int height, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer, int min_value, int max_value);
-
+NumericInputBox numeric_input_box(Vec2i pos, int width, int height, const char* str, TTF_Font* font, Color text_color, Color background_color, SDL_Renderer* renderer, int initial_value, int min_value, int max_value);
 void render_numeric_input_box(NumericInputBox* nip, SDL_Renderer* renderer);
+bool update_numeric_input_box(NumericInputBox* nip, Vec2i pos, int global_max, SDL_Renderer* renderer);
+void delete_numeric_input_box(NumericInputBox* nip);
 
 #endif
