@@ -42,8 +42,8 @@ Text text(Vec2i pos, int width, int heigh, const char* str, TTF_Font* font, Colo
     .text = texture,
     .boundary = (SDL_Rect)
     {
-      .x = pos.x - width/2,
-      .y = pos.y - heigh/2,
+      .x = pos.x, //- width/2,
+      .y = pos.y, //- heigh/2,
       .w = width,
       .h = heigh
     },
@@ -52,19 +52,11 @@ Text text(Vec2i pos, int width, int heigh, const char* str, TTF_Font* font, Colo
 
 void render_text(Text* text, SDL_Renderer* renderer)
 {
-  // int w, h;
-  // LOG_FAIL(!SDL_QueryTexture(text->text, NULL, NULL, &w, &h));
-  //
-  // float rw = (float)w/(float)h;
-  // float rh = (float)h/(float)w;
-  //
-  // float real_w = (float)text->boundary.h * rw;
-  // float real_h = (float)text->boundary.w * rh;
-  //
-  // SDL_Rect src = {0, 0, real_w, real_h};
-  // SDL_Rect dst = {text->boundary.x - real_w/2, text->boundary.y - real_h/2, real_w, real_h};
-  // LOG_FAIL(!SDL_RenderCopy(renderer, text->text, &src, &dst));
-  LOG_FAIL(!SDL_RenderCopy(renderer, text->text, NULL, &text->boundary));
+  int w, h;
+  LOG_FAIL(!SDL_QueryTexture(text->text, NULL, NULL, &w, &h));
+  SDL_Rect src = {0, 0, w, h};
+  SDL_Rect dst = {text->boundary.x - (w/2), text->boundary.y - (h/2), w, h};
+  LOG_FAIL(!SDL_RenderCopy(renderer, text->text, &src, &dst));
 }
 
 void delete_text(Text* text)

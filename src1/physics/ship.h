@@ -26,7 +26,7 @@ typedef struct
 {
   Vec2i top_left;
   Vec2i bottom_right;
-  uint8_t hp;
+  uint8_t area;
   Bitmap bitmap;
 } Ship;
 
@@ -34,16 +34,9 @@ typedef enum
 {
   F,
   I,
-  L,
-  N,
-  P,
-  T,
-  U,
-  V,
-  W,
-  X,
-  Y,
   Z,
+  H,
+  P,
 } ShipType;
 
 Ship* new_ship(ShipType type);

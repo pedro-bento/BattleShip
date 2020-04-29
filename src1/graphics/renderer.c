@@ -103,14 +103,32 @@ void render_ship_preview(Ship* ship, SDL_Renderer* renderer, Settings* settings)
   render_ship(ship, renderer, settings, true);
 }
 
+bool not_rendered(Ship* eval, Ship* rendered[], int rendered_count)
+{
+  for(int i = 0; i < rendered_count; ++i)
+    if(rendered[i] == eval)
+      return false;
+  return true;
+}
+
 void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
 {
+  Ship* rendered[(settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
+  int rendered_count = 0;
+
   for(size_t x = 0; x < settings->MAP_SIZE; x++)
   {
     for(size_t y = 0; y < settings->MAP_SIZE; y++)
     {
       if(player->map[x][y].ship != NULL)
-        render_ship(player->map[x][y].ship, renderer, settings, false);
+      {
+        if(not_rendered(player->map[x][y].ship, rendered, rendered_count))
+        {
+          rendered[rendered_count] = player->map[x][y].ship;
+          rendered_count++;
+          render_ship(player->map[x][y].ship, renderer, settings, false);
+        }
+      }
     }
   }
 }
@@ -163,6 +181,6 @@ void render_grid(SDL_Renderer* renderer, Settings* settings)
   set_render_color(COLOR_RADIOACTIVE_GREEN, renderer);
   for(size_t i = 0; i <= settings->MAP_SIZE; ++i)
     SDL_RenderDrawLine(renderer, offset + i * settings->CELL_SIZE, 0, offset + i * settings->CELL_SIZE, min);
-  for(size_t i = 1; i < settings->MAP_SIZE; ++i)
+  for(size_t i = 1; i <= settings->MAP_SIZE; ++i)
     SDL_RenderDrawLine(renderer, offset, i * settings->CELL_SIZE, offset + min, i * settings->CELL_SIZE);
 }

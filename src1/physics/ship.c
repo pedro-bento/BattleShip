@@ -13,7 +13,7 @@ Ship* new_ship(ShipType type)
     case F :{
       ship->top_left     = vec2i(0,0),
       ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
+      ship->area         = 5,
       ship->bitmap       = (Bitmap){
         .states = {
           {0, 0, 0, 0, 0},
@@ -28,7 +28,7 @@ Ship* new_ship(ShipType type)
     case I :{
       ship->top_left     = vec2i(0,0),
       ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
+      ship->area         = 5,
       ship->bitmap       = (Bitmap){
         .states = {
           {0, 0, 1, 0, 0},
@@ -36,141 +36,6 @@ Ship* new_ship(ShipType type)
           {0, 0, 1, 0, 0},
           {0, 0, 1, 0, 0},
           {0, 0, 1, 0, 0},
-        }
-      };
-    } break;
-
-    case L :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 1, 0, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 1, 1, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case N :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 1},
-          {0, 1, 0, 1, 0},
-          {1, 0, 1, 0, 0},
-          {0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case P :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 0, 1, 1, 0},
-          {0, 0, 1, 1, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case T :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 1, 1, 1, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case U :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 1, 0, 1, 0},
-          {0, 1, 1, 1, 0},
-          {0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case V :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {1, 0, 0, 0, 1},
-          {0, 1, 0, 1, 0},
-          {0, 0, 1, 0, 0},
-          {0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case W :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 0, 0, 0, 0},
-          {1, 0, 1, 0, 1},
-          {0, 1, 0, 1, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case X :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 1, 0, 1, 0},
-          {0, 0, 1, 0, 0},
-          {0, 1, 0, 1, 0},
-          {0, 0, 0, 0, 0},
-        }
-      };
-    } break;
-
-    case Y :{
-      ship->top_left     = vec2i(0,0),
-      ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
-      ship->bitmap       = (Bitmap){
-        .states = {
-          {0, 0, 0, 0, 0},
-          {0, 1, 0, 1, 0},
-          {0, 0, 1, 0, 0},
-          {0, 1, 0, 0, 0},
-          {1, 0, 0, 0, 0},
         }
       };
     } break;
@@ -178,7 +43,7 @@ Ship* new_ship(ShipType type)
     case Z :{
       ship->top_left     = vec2i(0,0),
       ship->bottom_right = vec2i(4,4),
-      ship->hp           = 5,
+      ship->area         = 5,
       ship->bitmap       = (Bitmap){
         .states = {
           {0, 0, 0, 0, 0},
@@ -189,6 +54,37 @@ Ship* new_ship(ShipType type)
         }
       };
     } break;
+
+    case H :{
+      ship->top_left     = vec2i(0,0),
+      ship->bottom_right = vec2i(4,4),
+      ship->area         = 9,
+      ship->bitmap       = (Bitmap){
+        .states = {
+          {0, 1, 0, 0, 0},
+          {0, 1, 0, 1, 0},
+          {0, 1, 1, 1, 0},
+          {0, 1, 0, 1, 0},
+          {0, 1, 0, 0, 0},
+        }
+      };
+    } break;
+
+    case P :{
+      ship->top_left     = vec2i(0,0),
+      ship->bottom_right = vec2i(4,4),
+      ship->area         = 5,
+      ship->bitmap       = (Bitmap){
+        .states = {
+          {0, 0, 0, 0, 0},
+          {0, 0, 1, 1, 0},
+          {0, 0, 1, 1, 0},
+          {0, 0, 1, 0, 0},
+          {0, 0, 0, 0, 0},
+        }
+      };
+    } break;
+
   }
 
   return ship;

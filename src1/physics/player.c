@@ -6,6 +6,8 @@ Player* new_player(size_t map_size)
   Player* player = (Player*)calloc(1, sizeof(Player));
   LOG_FAIL(player);
 
+  player->hp = 0;
+
   player->map = calloc(map_size, sizeof(Cell*));
   LOG_FAIL(player->map);
 
@@ -45,7 +47,7 @@ ShotState player_register_shot(Player* player, Vec2i pos)
     return SHOT_STATE_MISS;
   }
 
-  if(state == SHIP_STATE_GOOD) ship->hp--;
+  if(state == SHIP_STATE_GOOD) player->hp--;
   ship->bitmap.states[pos.x - ship->top_left.x][pos.y - ship->top_left.y] = SHIP_STATE_HIT;
   return SHOT_STATE_HIT;
 }

@@ -7,14 +7,18 @@
 #include "../graphics/renderer.h"
 #include "../graphics/ui.h"
 #include "fight.h"
+#include <stdlib.h>
 
 typedef struct
 {
+  SDL_Renderer* renderer;
   Settings* settings;
   Game* game;
   Ship* ship;
   int current_player_id;
   int current_ship_count;
+  Button random;
+  bool no_ship_preview;
 } Data;
 
 void ps_render(State* state, SDL_Renderer* renderer);
@@ -28,11 +32,18 @@ State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* ren
 
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
+  data->renderer = renderer;
   data->settings = settings;
   data->game = game;
-  data->ship = new_ship(F);
+  data->ship = new_ship(settings->ships[0]);
   data->current_player_id = 1;
   data->current_ship_count = 1;
+  data->no_ship_preview = false;
+
+  data->random = button(
+    vec2i(settings->WINDOW_WIDTH * 0.95, settings->WINDOW_HEIGHT * 0.05),
+    settings->WINDOW_WIDTH * 0.065, settings->WINDOW_HEIGHT * 0.05, 2,
+    "Random", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN, renderer);
 
   state->data = data;
   state->render = ps_render;
@@ -44,6 +55,7 @@ State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* ren
 
 void delete_placing_ships_state(State* state)
 {
+  delete_button(&((Data*)state->data)->random);
   free(state->data);
   free(state);
 }
@@ -60,9 +72,20 @@ void ps_render(State* state, SDL_Renderer* renderer)
 
   render_grid(renderer, settings);
   render_player(game_get_player_by_id(game, current_player_id), renderer, settings);
-  render_ship_preview(ship, renderer, settings);
+
+  if(!((Data*)state->data)->no_ship_preview)
+    render_ship_preview(ship, renderer, settings);
+  else
+    ((Data*)state->data)->no_ship_preview = false;
+
+  render_button(&((Data*)state->data)->random, renderer);
 
   SDL_RenderPresent(renderer);
+}
+
+static inline int rand_range(int min, int max)
+{
+  return rand() % (max + 1 - min) + min;
 }
 
 void ps_handle_event(State* state, SDL_Event* event)
@@ -75,6 +98,39 @@ void ps_handle_event(State* state, SDL_Event* event)
 
   switch(event->type)
   {
+    case SDL_MOUSEBUTTONDOWN :{
+      Vec2i mouse_pos = vec2i(event->button.x, event->button.y);
+      if(button_isClick(&((Data*)state->data)->random, mouse_pos))
+      {
+        Vec2i dxy;
+        while(((Data*)state->data)->current_ship_count <= settings->NUM_OF_SHIPS)
+        {
+          do{
+            dxy = vec2i(
+              rand_range(0, settings->MAP_SIZE-1) - ship->top_left.x,
+              rand_range(0, settings->MAP_SIZE-1) - ship->top_left.y);
+            ship_move(ship, dxy);
+            size_t num_rots = rand_range(0, 4);
+            for(size_t i = 0; i < num_rots; ++i)
+              ship_rotate(ship, true);
+          }while(!game_is_valid_ship(game, ship, current_player_id, false));
+
+          game_player_place_ship(game, ship, current_player_id);
+
+          ship = ((Data*)state->data)->ship = new_ship(
+            ((Data*)state->data)->settings->ships[
+              ((Data*)state->data)->current_ship_count]);
+          ((Data*)state->data)->current_ship_count++;
+        }
+        ((Data*)state->data)->no_ship_preview = true;
+        ps_render(state, ((Data*)state->data)->renderer);
+        SDL_Delay(1500);
+        ((Data*)state->data)->current_player_id++;
+        ((Data*)state->data)->current_ship_count = 0;
+        return;
+      }
+    } break;
+
     case SDL_KEYDOWN :{
       switch(event->key.keysym.sym)
       {
@@ -128,7 +184,7 @@ void ps_handle_event(State* state, SDL_Event* event)
               return;
             }
 
-            ((Data*)state->data)->ship = new_ship(F);
+            ((Data*)state->data)->ship = new_ship(((Data*)state->data)->settings->ships[((Data*)state->data)->current_ship_count]);
             ((Data*)state->data)->current_ship_count++;
           }
         } break;

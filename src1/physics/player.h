@@ -22,6 +22,7 @@ typedef struct
 
 typedef struct
 {
+  int hp;
   Cell** map;
 } Player;
 

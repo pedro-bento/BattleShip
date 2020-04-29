@@ -105,6 +105,8 @@ void f_handle_event(State* state, SDL_Event* event)
         case SDLK_RETURN :{
           game_player_shoot(game, *shot, current_player);
           ((Data*)state->data)->current_player = flip_player_id(current_player);
+          if(game_is_over(game))
+            ((Data*)state->data)->isContinue = true;
         } break;
       }
     } break;
@@ -115,6 +117,11 @@ State* f_update(State* state)
 {
   if(((Data*)state->data)->isContinue == true)
   {
+    if(((Data*)state->data)->game->player1->hp == 0)
+      printf("Player 1 lose\n");
+    else
+      printf("Player 2 lose\n");
+
     delete_fight_state(state);
     return NULL;
   }

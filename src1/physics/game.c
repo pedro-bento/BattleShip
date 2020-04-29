@@ -51,16 +51,20 @@ bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
     return false;
 
   Player* player = game_get_player_by_id(game, id);
-  for(int x = ship->top_left.x; x < ship->bottom_right.x; ++x)
+  for(int x = ship->top_left.x; x <= ship->bottom_right.x; ++x)
   {
-    for(int y = ship->top_left.y; y < ship->bottom_right.y; ++y)
+    for(int y = ship->top_left.y; y <= ship->bottom_right.y; ++y)
     {
-      // this can overwrite bitmaps, but that's okay because it will never have
-      // overlapping ship cells due to the 'game_is_valid_ship' check
       if(x >= 0 && y >= 0 && x < game->settings->MAP_SIZE && y < game->settings->MAP_SIZE)
-        player->map[x][y].ship = ship;
+      {
+        ShipState player_ship_state = player_get_ship_state(player, vec2i(x, y));
+        if(!(player_ship_state == SHIP_STATE_GOOD || player_ship_state == SHIP_STATE_HIT))
+          player->map[x][y].ship = ship;
+      }
     }
   }
+
+  player->hp += ship->area;
 
   return true;
 }
@@ -72,4 +76,9 @@ void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
 
   Player* player = game_get_player_by_id(game, id);
   player->map[shot.x][shot.y].shot_state = shot_state;
+}
+
+bool game_is_over(Game* game)
+{
+  return game->player1->hp == 0 || game->player2->hp == 0;
 }

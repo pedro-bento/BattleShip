@@ -28,6 +28,7 @@ bool game_is_valid_ship(Game* game, Ship* ship, PlayerID id, bool ignore_ships);
 // returns false if ship was not placed, true otherwise
 bool game_player_place_ship(Game* game, Ship* ship, PlayerID id);
 void game_player_shoot(Game* game, Vec2i shot, PlayerID id);
+bool game_is_over(Game* game);
 
 static inline PlayerID flip_player_id(PlayerID id)
 {

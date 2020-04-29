@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "config.h"
 #include "system/log.h"
@@ -19,14 +21,17 @@ int main(int argc, char const *argv[])
   (void) argc;
   (void) argv;
 
+  time_t t;
+   srand((unsigned) time(&t));
+
   LOG_FAIL(!TTF_Init());
-  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 128);
+  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 20);
   LOG_FAIL(font);
 
   Settings settings =
   {
-    .WINDOW_WIDTH = 800,
-    .WINDOW_HEIGHT = 600,
+    .WINDOW_WIDTH = 1000,
+    .WINDOW_HEIGHT = 800,
     .font = font,
   };
 
