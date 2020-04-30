@@ -11,6 +11,13 @@ Game* new_game(Settings* settings)
   return game;
 }
 
+void delete_game(Game* game)
+{
+  delete_player(game->player1, game->settings->MAP_SIZE);
+  delete_player(game->player2, game->settings->MAP_SIZE);
+  free(game);
+}
+
 Player* game_get_player_by_id(Game* game, PlayerID id)
 {
   if(id == 1)

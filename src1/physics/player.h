@@ -27,6 +27,7 @@ typedef struct
 } Player;
 
 Player* new_player(size_t map_size);
+void delete_player(Player* player, size_t map_size);
 // returns the ship state at pos of its own map
 ShipState player_get_ship_state(Player* player, Vec2i pos);
 // registers opponent shot to its own map and returns shot state

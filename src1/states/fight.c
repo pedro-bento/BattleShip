@@ -1,10 +1,12 @@
 #include "fight.h"
 #include "../system/log.h"
 #include "../graphics/renderer.h"
-#include <stdbool.h>
+#include "results.h"
 
 typedef struct
 {
+  SDL_Renderer* renderer;
+  Settings* settings;
   Game* game;
   Vec2i shot[2];
   PlayerID current_player;
@@ -15,15 +17,17 @@ void f_render(State* state, SDL_Renderer* renderer);
 void f_handle_event(State* state, SDL_Event* event);
 State* f_update(State* state);
 
-State* new_fight_state(Game* game)
+State* new_fight_state(Game* game, Settings* settings, SDL_Renderer* renderer)
 {
   State* state = malloc(sizeof(State));
   LOG_FAIL(state);
 
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
+
+  data->renderer = renderer;
+  data->settings = settings;
   data->game = game;
-  Settings* settings = game->settings;
   data->shot[0] = data->shot[1] = vec2i(settings->MAP_SIZE/2,settings->MAP_SIZE/2);
   data->current_player = PLAYER1;
   data->isContinue = false;
@@ -117,13 +121,12 @@ State* f_update(State* state)
 {
   if(((Data*)state->data)->isContinue == true)
   {
-    if(((Data*)state->data)->game->player1->hp == 0)
-      printf("Player 1 lose\n");
-    else
-      printf("Player 2 lose\n");
-
+    SDL_Renderer* renderer = ((Data*)state->data)->renderer;
+    Settings* settings = ((Data*)state->data)->settings;
+    Game* game = ((Data*)state->data)->game;
+    State* new_state = new_results_state(game, settings, renderer);
     delete_fight_state(state);
-    return NULL;
+    return new_state;
   }
   return state;
 }

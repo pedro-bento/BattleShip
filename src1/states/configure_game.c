@@ -39,7 +39,7 @@ State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer)
   data->title = text(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.065),
     settings->WINDOW_WIDTH * 0.4, settings->WINDOW_HEIGHT * 0.05,
-    "Choose your settings!", settings->font, COLOR_RADIOACTIVE_GREEN, renderer);
+    "Choose your settings!", settings->font_big, COLOR_RADIOACTIVE_GREEN, renderer);
 
   data->play = button(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.92),
@@ -57,35 +57,35 @@ State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer)
   data->f_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.3),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Fisherman Folk", settings->font,
+    "Freddie Barr", settings->font,
     COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->i_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.42),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Sailor's Irony", settings->font,
+    "Iqra Mcneil", settings->font,
     COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->z_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.54),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "River Zebrafish", settings->font,
+    "Zarah Atkins", settings->font,
     COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->h_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.66),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Hercules Catamaran", settings->font,
+    "Harri Eaton", settings->font,
     COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->p_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.78),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Piter Submarine", settings->font,
+    "Priya Lynch", settings->font,
     COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 

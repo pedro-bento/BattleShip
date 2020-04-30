@@ -14,7 +14,7 @@
 #include "physics/game.h"
 #include "graphics/renderer.h"
 #include "graphics/ui.h"
-#include "states/configure_game.h"
+#include "states/first.h"
 
 int main(int argc, char const *argv[])
 {
@@ -25,14 +25,19 @@ int main(int argc, char const *argv[])
   srand((unsigned) time(&t));
 
   LOG_FAIL(!TTF_Init());
-  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 20);
+  TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 24);
   LOG_FAIL(font);
+
+  LOG_FAIL(!TTF_Init());
+  TTF_Font* font_big = TTF_OpenFont("res/UbuntuMono-R.ttf", 48);
+  LOG_FAIL(font_big);
 
   Settings settings =
   {
     .WINDOW_WIDTH = 1000,
     .WINDOW_HEIGHT = 800,
     .font = font,
+    .font_big = font_big,
   };
 
   LOG_FAIL(!SDL_Init(SDL_INIT_VIDEO));
@@ -47,7 +52,7 @@ int main(int argc, char const *argv[])
   LOG_FAIL(renderer);
   LOG_FAIL(!SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND));
 
-  State* state = new_configure_game_state(&settings, renderer);
+  State* state = new_first_state(&settings, renderer);
   bool quit = false;
   SDL_Event event;
   while(!quit)

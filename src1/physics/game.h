@@ -23,6 +23,7 @@ typedef struct
 } Game;
 
 Game* new_game(Settings* settings);
+void delete_game(Game* game);
 Player* game_get_player_by_id(Game* game, PlayerID id);
 bool game_is_valid_ship(Game* game, Ship* ship, PlayerID id, bool ignore_ships);
 // returns false if ship was not placed, true otherwise

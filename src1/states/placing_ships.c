@@ -7,7 +7,7 @@
 #include "../graphics/renderer.h"
 #include "../graphics/ui.h"
 #include "fight.h"
-#include <stdlib.h>
+#include "../math/math.h"
 
 typedef struct
 {
@@ -42,7 +42,7 @@ State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* ren
 
   data->random = button(
     vec2i(settings->WINDOW_WIDTH * 0.95, settings->WINDOW_HEIGHT * 0.05),
-    settings->WINDOW_WIDTH * 0.065, settings->WINDOW_HEIGHT * 0.05, 2,
+    settings->WINDOW_WIDTH * 0.078, settings->WINDOW_HEIGHT * 0.05, 2,
     "Random", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN, renderer);
 
   state->data = data;
@@ -81,11 +81,6 @@ void ps_render(State* state, SDL_Renderer* renderer)
   render_button(&((Data*)state->data)->random, renderer);
 
   SDL_RenderPresent(renderer);
-}
-
-static inline int rand_range(int min, int max)
-{
-  return rand() % (max + 1 - min) + min;
 }
 
 void ps_handle_event(State* state, SDL_Event* event)
@@ -197,8 +192,10 @@ State* ps_update(State* state)
 {
   if(((Data*)state->data)->current_player_id > 2)
   {
+    SDL_Renderer* renderer = ((Data*)state->data)->renderer;
+    Settings* settings = ((Data*)state->data)->settings;
     Game* game = ((Data*)state->data)->game;
-    State* new_state = new_fight_state(game);
+    State* new_state = new_fight_state(game, settings, renderer);
     delete_placing_ships_state(state);
     return new_state;
   }

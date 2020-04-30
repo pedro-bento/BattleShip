@@ -17,6 +17,7 @@ typedef struct
   int NUM_OF_SHIPS;
   int ships[(MAX_MAP_SIZE * MAX_MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
   TTF_Font* font;
+  TTF_Font* font_big;
 } Settings;
 
 #endif // CONFIG_H

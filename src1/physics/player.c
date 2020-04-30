@@ -29,6 +29,47 @@ Player* new_player(size_t map_size)
   return player;
 }
 
+bool not_deleted(Ship* ship, Ship* deleted[], int deleted_count)
+{
+  for(int i = 0; i < deleted_count; ++i)
+    if(deleted[i] == ship)
+      return false;
+  return true;
+}
+
+void delete_player(Player* player, size_t map_size)
+{
+  // free ships
+  Ship* deleted[(map_size * map_size) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
+  int deleted_count = 0;
+
+  for(size_t x = 0; x < map_size; x++)
+  {
+    for(size_t y = 0; y < map_size; y++)
+    {
+      if(player->map[x][y].ship != NULL)
+      {
+        if(not_deleted(player->map[x][y].ship, deleted, deleted_count))
+        {
+          deleted[deleted_count] = player->map[x][y].ship;
+          deleted_count++;
+          delete_ship(player->map[x][y].ship);
+        }
+      }
+    }
+  }
+
+  // free cells
+  for(size_t i = 0; i < map_size; i++)
+    free(player->map[i]);
+
+  // free map
+  free(player->map);
+
+  // free player
+  free(player);
+}
+
 ShipState player_get_ship_state(Player* player, Vec2i pos)
 {
   Ship* ship = player->map[pos.x][pos.y].ship;

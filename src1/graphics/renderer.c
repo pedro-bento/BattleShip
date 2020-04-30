@@ -17,7 +17,7 @@ void render_rects(const SDL_Rect* rects, int count, Color color, SDL_Renderer* r
   LOG_FAIL(!SDL_RenderFillRects(renderer, rects, count));
 }
 
-void render_ship(Ship* ship, SDL_Renderer* renderer, Settings* settings, bool is_preview)
+void render_ship(Ship* ship, SDL_Renderer* renderer, Settings* settings, bool is_preview, float scale, int xOffset, int yOffset)
 {
   size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
   size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
@@ -49,23 +49,23 @@ void render_ship(Ship* ship, SDL_Renderer* renderer, Settings* settings, bool is
       switch(ship->bitmap.states[x - begin_x + offset_x][y - begin_y + offset_y])
       {
         case SHIP_STATE_GOOD :{
-          cells_good[count_good].x = map_offset + y * settings->CELL_SIZE;
-          cells_good[count_good].y = x * settings->CELL_SIZE;
-          cells_good[count_good].w = cells_good[count_good].h = settings->CELL_SIZE;
+          cells_good[count_good].x = map_offset + y * settings->CELL_SIZE * scale + xOffset;
+          cells_good[count_good].y = x * settings->CELL_SIZE * scale + yOffset;
+          cells_good[count_good].w = cells_good[count_good].h = settings->CELL_SIZE * scale;
           ++count_good;
         } break;
 
         case SHIP_STATE_HIT :{
-          cells_hit[count_hit].x = map_offset + y * settings->CELL_SIZE;
-          cells_hit[count_hit].y = x * settings->CELL_SIZE;
-          cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE;
+          cells_hit[count_hit].x = map_offset + y * settings->CELL_SIZE * scale + xOffset;
+          cells_hit[count_hit].y = x * settings->CELL_SIZE * scale + yOffset;
+          cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE * scale;
           ++count_hit;
         } break;
 
         case SHIP_STATE_MISS :{
-          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE;
-          cells_miss[count_miss].y = x * settings->CELL_SIZE;
-          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE;
+          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE * scale + xOffset;
+          cells_miss[count_miss].y = x * settings->CELL_SIZE * scale + yOffset;
+          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE * scale;
           ++count_miss;
         } break;
       }
@@ -100,7 +100,7 @@ void render_shot(Vec2i pos, SDL_Renderer* renderer, Settings* settings)
 
 void render_ship_preview(Ship* ship, SDL_Renderer* renderer, Settings* settings)
 {
-  render_ship(ship, renderer, settings, true);
+  render_ship(ship, renderer, settings, true, 1, 0, 0);
 }
 
 bool not_rendered(Ship* eval, Ship* rendered[], int rendered_count)
@@ -111,7 +111,7 @@ bool not_rendered(Ship* eval, Ship* rendered[], int rendered_count)
   return true;
 }
 
-void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
+void render_player0(Player* player, SDL_Renderer* renderer, Settings* settings, float scale, int xOffset, int yOffset)
 {
   Ship* rendered[(settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
   int rendered_count = 0;
@@ -126,11 +126,16 @@ void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
         {
           rendered[rendered_count] = player->map[x][y].ship;
           rendered_count++;
-          render_ship(player->map[x][y].ship, renderer, settings, false);
+          render_ship(player->map[x][y].ship, renderer, settings, false, scale, xOffset, yOffset);
         }
       }
     }
   }
+}
+
+void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
+{
+  render_player0(player, renderer, settings, 1, 0, 0);
 }
 
 void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
@@ -173,14 +178,32 @@ void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
   render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);
 }
 
-void render_grid(SDL_Renderer* renderer, Settings* settings)
+void render_grid0(SDL_Renderer* renderer, Settings* settings, float scale, int xOffset, int yOffset)
 {
   size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
   size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
   size_t offset = (max - min) / 2;
   set_render_color(COLOR_RADIOACTIVE_GREEN, renderer);
   for(size_t i = 0; i <= settings->MAP_SIZE; ++i)
-    SDL_RenderDrawLine(renderer, offset + i * settings->CELL_SIZE, 0, offset + i * settings->CELL_SIZE, min);
-  for(size_t i = 1; i <= settings->MAP_SIZE; ++i)
-    SDL_RenderDrawLine(renderer, offset, i * settings->CELL_SIZE, offset + min, i * settings->CELL_SIZE);
+    SDL_RenderDrawLine(renderer, xOffset + offset + i * settings->CELL_SIZE * scale, yOffset, xOffset + offset + i * settings->CELL_SIZE * scale, min * scale + yOffset);
+  for(size_t i = 0; i <= settings->MAP_SIZE; ++i)
+    SDL_RenderDrawLine(renderer, xOffset + offset, yOffset + i * settings->CELL_SIZE * scale, xOffset + offset + min * scale, yOffset + i * settings->CELL_SIZE * scale);
+}
+
+void render_grid(SDL_Renderer* renderer, Settings* settings)
+{
+  render_grid0(renderer, settings, 1, 0, 0);
+}
+
+void render_final(Game* game, SDL_Renderer* renderer, Settings* settings)
+{
+  size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t offset = (max - min) / 2;
+  int xOffset = settings->WINDOW_WIDTH * 0.5;
+  int yOffset = settings->WINDOW_HEIGHT * 0.25;
+  render_grid0(renderer, settings, 0.5, -(offset/2), yOffset);
+  render_grid0(renderer, settings, 0.5, xOffset-(offset/2), yOffset);
+  render_player0(game_get_player_by_id(game, PLAYER1), renderer, settings, 0.5, -(offset/2), yOffset);
+  render_player0(game_get_player_by_id(game, PLAYER2), renderer, settings, 0.5, xOffset-(offset/2), yOffset);
 }

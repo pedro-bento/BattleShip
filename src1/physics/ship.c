@@ -90,7 +90,7 @@ Ship* new_ship(ShipType type)
   return ship;
 }
 
-void  delete_ship(Ship* ship)
+void delete_ship(Ship* ship)
 {
   free(ship);
 }
