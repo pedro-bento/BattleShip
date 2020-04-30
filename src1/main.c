@@ -22,7 +22,7 @@ int main(int argc, char const *argv[])
   (void) argv;
 
   time_t t;
-   srand((unsigned) time(&t));
+  srand((unsigned) time(&t));
 
   LOG_FAIL(!TTF_Init());
   TTF_Font* font = TTF_OpenFont("res/UbuntuMono-R.ttf", 20);
