@@ -12,6 +12,8 @@
 #define COLOR_CRIMSON_RED_A         color(153, 0, 0, 130)
 #define COLOR_FLUORESCENT_YELLOW_A  color(204, 255, 0, 155)
 
+// Color
+// stores RGBA values
 typedef struct
 {
   uint8_t r;

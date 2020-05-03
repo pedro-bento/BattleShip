@@ -42,8 +42,8 @@ Text text(Vec2i pos, int width, int heigh, const char* str, TTF_Font* font, Colo
     .text = texture,
     .boundary = (SDL_Rect)
     {
-      .x = pos.x, //- width/2,
-      .y = pos.y, //- heigh/2,
+      .x = pos.x,
+      .y = pos.y, 
       .w = width,
       .h = heigh
     },

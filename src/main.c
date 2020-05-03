@@ -74,6 +74,8 @@ int main(int argc, char const *argv[])
       quit = true;
   }
 
+  TTF_CloseFont(settings.font);
+  TTF_CloseFont(settings.font_big);
   TTF_Quit();
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);

@@ -25,17 +25,17 @@ State* new_fight_state(Game* game, Settings* settings, SDL_Renderer* renderer)
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
 
-  data->renderer = renderer;
-  data->settings = settings;
-  data->game = game;
+  data->renderer        = renderer;
+  data->settings        = settings;
+  data->game            = game;
+  data->current_player  = PLAYER1;
+  data->isContinue      = false;
   data->shot[0] = data->shot[1] = vec2i(settings->MAP_SIZE/2,settings->MAP_SIZE/2);
-  data->current_player = PLAYER1;
-  data->isContinue = false;
 
-  state->data = data;
-  state->render = f_render;
+  state->data         = data;
+  state->render       = f_render;
   state->handle_event = f_handle_event;
-  state->update = f_update;
+  state->update       = f_update;
 
   return state;
 }
@@ -48,10 +48,10 @@ void delete_fight_state(State* state)
 
 void f_render(State* state, SDL_Renderer* renderer)
 {
-  Game* game = ((Data*)state->data)->game;
-  Settings* settings = game->settings;
+  Game* game              = ((Data*)state->data)->game;
+  Settings* settings      = game->settings;
   PlayerID current_player = ((Data*)state->data)->current_player;
-  Vec2i shot = ((Data*)state->data)->shot[current_player - 1];
+  Vec2i shot              = ((Data*)state->data)->shot[current_player - 1];
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
@@ -72,10 +72,11 @@ bool inBound(Vec2i pos, Settings* settings)
 
 void f_handle_event(State* state, SDL_Event* event)
 {
-  Game* game = ((Data*)state->data)->game;
-  Settings* settings = game->settings;
-  PlayerID current_player = ((Data*)state->data)->current_player;
-  Vec2i* shot = &((Data*)state->data)->shot[current_player - 1];
+  Game* game                = ((Data*)state->data)->game;
+  Settings* settings        = game->settings;
+  PlayerID* current_player  = &((Data*)state->data)->current_player;
+  Vec2i* shot               = &((Data*)state->data)->shot[*current_player - 1];
+  bool* isContinue          = &((Data*)state->data)->isContinue;
 
   switch(event->type)
   {
@@ -107,10 +108,9 @@ void f_handle_event(State* state, SDL_Event* event)
         } break;
 
         case SDLK_RETURN :{
-          game_player_shoot(game, *shot, current_player);
-          ((Data*)state->data)->current_player = flip_player_id(current_player);
-          if(game_is_over(game))
-            ((Data*)state->data)->isContinue = true;
+          game_player_shoot(game, *shot, *current_player);
+          *current_player = flip_player_id(*current_player);
+          if(game_is_over(game)) *isContinue = true;
         } break;
       }
     } break;
@@ -119,12 +119,13 @@ void f_handle_event(State* state, SDL_Event* event)
 
 State* f_update(State* state)
 {
-  if(((Data*)state->data)->isContinue == true)
+  bool* isContinue = &((Data*)state->data)->isContinue;
+  if(*isContinue == true)
   {
     SDL_Renderer* renderer = ((Data*)state->data)->renderer;
-    Settings* settings = ((Data*)state->data)->settings;
-    Game* game = ((Data*)state->data)->game;
-    State* new_state = new_results_state(game, settings, renderer);
+    Settings* settings     = ((Data*)state->data)->settings;
+    Game* game             = ((Data*)state->data)->game;
+    State* new_state       = new_results_state(game, settings, renderer);
     delete_fight_state(state);
     return new_state;
   }

@@ -7,6 +7,7 @@
 #include "state.h"
 #include "../config.h"
 
+// returns a heap allocated state
 State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer);
 
 #endif

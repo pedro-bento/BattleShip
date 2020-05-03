@@ -59,11 +59,10 @@ void delete_player(Player* player, size_t map_size)
     }
   }
 
-  // free cells
+  // free map
   for(size_t i = 0; i < map_size; i++)
     free(player->map[i]);
 
-  // free map
   free(player->map);
 
   // free player
@@ -83,7 +82,8 @@ ShotState player_register_shot(Player* player, Vec2i pos)
   if(ship == NULL) return SHOT_STATE_MISS;
 
   ShipState state = ship->bitmap.states[pos.x - ship->top_left.x][pos.y - ship->top_left.y];
-  if(state == SHIP_STATE_EMPTY || state == SHIP_STATE_MISS){
+  if(state == SHIP_STATE_EMPTY || state == SHIP_STATE_MISS)
+  {
     ship->bitmap.states[pos.x - ship->top_left.x][pos.y - ship->top_left.y] = SHIP_STATE_MISS;
     return SHOT_STATE_MISS;
   }

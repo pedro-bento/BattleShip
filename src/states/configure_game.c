@@ -32,9 +32,9 @@ State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer)
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
 
-  data->renderer = renderer;
-
-  data->settings = settings;
+  data->renderer    = renderer;
+  data->settings    = settings;
+  data->isContinue  = false;
 
   data->title = text(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.065),
@@ -44,52 +44,44 @@ State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer)
   data->play = button(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.92),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.08, 5,
-    "Let's play!", settings->font, COLOR_BLACK,
-    COLOR_RADIOACTIVE_GREEN, renderer);
+    "Let's play!", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN, renderer);
 
   data->map_size = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.18),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Map Size", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Map Size", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, MIN_MAP_SIZE, MIN_MAP_SIZE, MAX_MAP_SIZE);
 
   data->f_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.3),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Freddie Barr", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Freddie Barr", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->i_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.42),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Iqra Mcneil", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Iqra Mcneil", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->z_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.54),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Zarah Atkins", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Zarah Atkins", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->h_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.66),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Harri Eaton", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Harri Eaton", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
   data->p_input = numeric_input_box(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.78),
     settings->WINDOW_WIDTH * 0.2, settings->WINDOW_HEIGHT * 0.045,
-    "Priya Lynch", settings->font,
-    COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
+    "Priya Lynch", settings->font, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN,
     renderer, 1, 1, 99);
 
-  data->isContinue = false;
 
   state->data = data;
   state->render = cg_render;
@@ -101,119 +93,133 @@ State* new_configure_game_state(Settings* settings, SDL_Renderer* renderer)
 
 void delete_configure_game_state(State* state)
 {
-  delete_text(&((Data*)state->data)->title);
-  delete_button(&((Data*)state->data)->play);
-  delete_numeric_input_box(&((Data*)state->data)->map_size);
-  delete_numeric_input_box(&((Data*)state->data)->f_input);
-  delete_numeric_input_box(&((Data*)state->data)->i_input);
-  delete_numeric_input_box(&((Data*)state->data)->z_input);
-  delete_numeric_input_box(&((Data*)state->data)->h_input);
-  delete_numeric_input_box(&((Data*)state->data)->p_input);
+  Text* title               = &((Data*)state->data)->title;
+  Button* play              = &((Data*)state->data)->play;
+  NumericInputBox* map_size = &((Data*)state->data)->map_size;
+  NumericInputBox* f_input  = &((Data*)state->data)->f_input;
+  NumericInputBox* i_input  = &((Data*)state->data)->i_input;
+  NumericInputBox* z_input  = &((Data*)state->data)->z_input;
+  NumericInputBox* h_input  = &((Data*)state->data)->h_input;
+  NumericInputBox* p_input  = &((Data*)state->data)->p_input;
+
+  delete_text(title);
+  delete_button(play);
+  delete_numeric_input_box(map_size);
+  delete_numeric_input_box(f_input);
+  delete_numeric_input_box(i_input);
+  delete_numeric_input_box(z_input);
+  delete_numeric_input_box(h_input);
+  delete_numeric_input_box(p_input);
   free(state->data);
   free(state);
 }
 
 void cg_render(State* state, SDL_Renderer* renderer)
 {
+  Text* title               = &((Data*)state->data)->title;
+  Button* play              = &((Data*)state->data)->play;
+  NumericInputBox* map_size = &((Data*)state->data)->map_size;
+  NumericInputBox* f_input  = &((Data*)state->data)->f_input;
+  NumericInputBox* i_input  = &((Data*)state->data)->i_input;
+  NumericInputBox* z_input  = &((Data*)state->data)->z_input;
+  NumericInputBox* h_input  = &((Data*)state->data)->h_input;
+  NumericInputBox* p_input  = &((Data*)state->data)->p_input;
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  render_text(&((Data*)state->data)->title, renderer);
-  render_button(&((Data*)state->data)->play, renderer);
-
-  render_numeric_input_box(&((Data*)state->data)->map_size, renderer);
-  render_numeric_input_box(&((Data*)state->data)->f_input, renderer);
-  render_numeric_input_box(&((Data*)state->data)->i_input, renderer);
-  render_numeric_input_box(&((Data*)state->data)->z_input, renderer);
-  render_numeric_input_box(&((Data*)state->data)->h_input, renderer);
-  render_numeric_input_box(&((Data*)state->data)->p_input, renderer);
+  render_text(title, renderer);
+  render_button(play, renderer);
+  render_numeric_input_box(map_size, renderer);
+  render_numeric_input_box(f_input, renderer);
+  render_numeric_input_box(i_input, renderer);
+  render_numeric_input_box(z_input, renderer);
+  render_numeric_input_box(h_input, renderer);
+  render_numeric_input_box(p_input, renderer);
 
   SDL_RenderPresent(renderer);
 }
 
 void cg_handle_event(State* state, SDL_Event* event)
 {
-  int total_number_of_ships =
-    ((Data*)state->data)->f_input.value +
-    ((Data*)state->data)->i_input.value +
-    ((Data*)state->data)->z_input.value +
-    ((Data*)state->data)->h_input.value +
-    ((Data*)state->data)->p_input.value;
+  Button* play              = &((Data*)state->data)->play;
+  NumericInputBox* map_size = &((Data*)state->data)->map_size;
+  NumericInputBox* f_input  = &((Data*)state->data)->f_input;
+  NumericInputBox* i_input  = &((Data*)state->data)->i_input;
+  NumericInputBox* z_input  = &((Data*)state->data)->z_input;
+  NumericInputBox* h_input  = &((Data*)state->data)->h_input;
+  NumericInputBox* p_input  = &((Data*)state->data)->p_input;
+  Settings* settings        = ((Data*)state->data)->settings;
+  bool* isContinue          = &((Data*)state->data)->isContinue;
+  SDL_Renderer* renderer    = ((Data*)state->data)->renderer;
 
-  int map_size = ((Data*)state->data)->settings->MAP_SIZE =
-    ((Data*)state->data)->map_size.value;
-  int max_number_of_ships = (map_size * map_size) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH);
-
+  int total_number_of_ships = f_input->value + i_input->value + z_input->value + h_input->value + p_input->value;
+  settings->MAP_SIZE = map_size->value;
+  int max_number_of_ships = (settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH);
   int global_max = max_number_of_ships - total_number_of_ships;
 
   if(event->type == SDL_MOUSEBUTTONDOWN)
   {
     Vec2i mouse_pos = vec2i(event->button.x, event->button.y);
 
-    if(button_isClick(&((Data*)state->data)->play, mouse_pos)){
-      if(total_number_of_ships <= max_number_of_ships)
-        ((Data*)state->data)->isContinue = true;
-      else
-        printf("Too many ships! %d %d\n", total_number_of_ships, max_number_of_ships);
+    if(button_isClick(play, mouse_pos)){
+      if(total_number_of_ships <= max_number_of_ships) *isContinue = true;
+      else printf("Too many ships!\n");
       return;
     }
 
     // Map Settings
-    if(update_numeric_input_box(&((Data*)state->data)->map_size, mouse_pos, INT_MAX, ((Data*)state->data)->renderer)){
-      ((Data*)state->data)->settings->MAP_SIZE = ((Data*)state->data)->map_size.value;
+    if(update_numeric_input_box(map_size, mouse_pos, INT_MAX, renderer))
+    {
+      settings->MAP_SIZE = map_size->value;
       return;
     }
 
     // Ships settings
-    if(update_numeric_input_box(&((Data*)state->data)->f_input, mouse_pos, global_max, ((Data*)state->data)->renderer))
+    if(update_numeric_input_box(f_input, mouse_pos, global_max, renderer))
       return;
-    if(update_numeric_input_box(&((Data*)state->data)->i_input, mouse_pos, global_max, ((Data*)state->data)->renderer))
+    if(update_numeric_input_box(i_input, mouse_pos, global_max, renderer))
       return;
-    if(update_numeric_input_box(&((Data*)state->data)->z_input, mouse_pos, global_max, ((Data*)state->data)->renderer))
+    if(update_numeric_input_box(z_input, mouse_pos, global_max, renderer))
       return;
-    if(update_numeric_input_box(&((Data*)state->data)->h_input, mouse_pos, global_max, ((Data*)state->data)->renderer))
+    if(update_numeric_input_box(h_input, mouse_pos, global_max, renderer))
       return;
-    if(update_numeric_input_box(&((Data*)state->data)->p_input, mouse_pos, global_max, ((Data*)state->data)->renderer))
+    if(update_numeric_input_box(p_input, mouse_pos, global_max, renderer))
       return;
   }
 }
 
 State* cg_update(State* state)
 {
-  if(((Data*)state->data)->isContinue == true)
+  NumericInputBox* map_size = &((Data*)state->data)->map_size;
+  NumericInputBox* f_input  = &((Data*)state->data)->f_input;
+  NumericInputBox* i_input  = &((Data*)state->data)->i_input;
+  NumericInputBox* z_input  = &((Data*)state->data)->z_input;
+  NumericInputBox* h_input  = &((Data*)state->data)->h_input;
+  NumericInputBox* p_input  = &((Data*)state->data)->p_input;
+  Settings* settings        = ((Data*)state->data)->settings;
+  bool* isContinue          = &((Data*)state->data)->isContinue;
+  SDL_Renderer* renderer = ((Data*)state->data)->renderer;
+
+  if(*isContinue == true)
   {
-    ((Data*)state->data)->settings->MAP_SIZE = ((Data*)state->data)->map_size.value;
-
-    ((Data*)state->data)->settings->NUM_OF_SHIPS =
-      ((Data*)state->data)->f_input.value +
-      ((Data*)state->data)->i_input.value +
-      ((Data*)state->data)->z_input.value +
-      ((Data*)state->data)->h_input.value +
-      ((Data*)state->data)->p_input.value;
-
-    ((Data*)state->data)->settings->CELL_SIZE =
-    ((Data*)state->data)->settings->WINDOW_WIDTH < ((Data*)state->data)->settings->WINDOW_HEIGHT ?
-      ((Data*)state->data)->settings->WINDOW_WIDTH / ((Data*)state->data)->settings->MAP_SIZE :
-      ((Data*)state->data)->settings->WINDOW_HEIGHT / ((Data*)state->data)->settings->MAP_SIZE;
+    settings->MAP_SIZE = map_size->value;
+    settings->NUM_OF_SHIPS = f_input->value + i_input->value + z_input->value + h_input->value + p_input->value;
+    settings->CELL_SIZE = settings->WINDOW_WIDTH < settings->WINDOW_HEIGHT ?
+      settings->WINDOW_WIDTH / settings->MAP_SIZE : settings->WINDOW_HEIGHT / settings->MAP_SIZE;
 
     int count = 0;
-    for(int i = 0; i < ((Data*)state->data)->f_input.value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = F;
-    for(int i = 0; i < ((Data*)state->data)->i_input.value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = I;
-    for(int i = 0; i < ((Data*)state->data)->z_input.value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = Z;
-    for(int i = 0; i < ((Data*)state->data)->h_input.value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = H;
-    for(int i = 0; i < ((Data*)state->data)->p_input.value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = P;
+    for(int i = 0; i < f_input->value; ++i, ++count) settings->ships[count] = F;
+    for(int i = 0; i < i_input->value; ++i, ++count) settings->ships[count] = I;
+    for(int i = 0; i < z_input->value; ++i, ++count) settings->ships[count] = Z;
+    for(int i = 0; i < h_input->value; ++i, ++count) settings->ships[count] = H;
+    for(int i = 0; i < p_input->value; ++i, ++count) settings->ships[count] = P;
 
-    SDL_Renderer* renderer = ((Data*)state->data)->renderer;
-    Settings* settings = ((Data*)state->data)->settings;
     Game* game = new_game(settings);
     State* new_state = new_placing_ships_state(settings, game, renderer);
     delete_configure_game_state(state);
     return new_state;
   }
+
   return state;
 }

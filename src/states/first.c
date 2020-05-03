@@ -34,9 +34,9 @@ State* new_first_state(Settings* settings, SDL_Renderer* renderer)
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
 
-  data->renderer = renderer;
-
-  data->settings = settings;
+  data->renderer  = renderer;
+  data->settings  = settings;
+  data->next      = THIS;
 
   data->title = text(
     vec2i(settings->WINDOW_WIDTH * 0.5, settings->WINDOW_HEIGHT * 0.08),
@@ -55,92 +55,93 @@ State* new_first_state(Settings* settings, SDL_Renderer* renderer)
     "Random Config", settings->font, COLOR_BLACK,
     COLOR_RADIOACTIVE_GREEN, renderer);
 
-  data->next = THIS;
 
-  state->data = data;
-  state->render = fst_render;
+  state->data         = data;
+  state->render       = fst_render;
   state->handle_event = fst_handle_event;
-  state->update = fst_update;
+  state->update       = fst_update;
 
   return state;
 }
 
 void delete_first_state(State* state)
 {
-  delete_text(&((Data*)state->data)->title);
-  delete_button(&((Data*)state->data)->manual);
-  delete_button(&((Data*)state->data)->random);
+  Text* title    = &((Data*)state->data)->title;
+  Button* manual = &((Data*)state->data)->manual;
+  Button* random = &((Data*)state->data)->random;
+
+  delete_text(title);
+  delete_button(manual);
+  delete_button(random);
   free(state->data);
   free(state);
 }
 
 void fst_render(State* state, SDL_Renderer* renderer)
 {
+  Text* title    = &((Data*)state->data)->title;
+  Button* manual = &((Data*)state->data)->manual;
+  Button* random = &((Data*)state->data)->random;
+
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  render_text(&((Data*)state->data)->title, renderer);
-  render_button(&((Data*)state->data)->manual, renderer);
-  render_button(&((Data*)state->data)->random, renderer);
+  render_text(title, renderer);
+  render_button(manual, renderer);
+  render_button(random, renderer);
 
   SDL_RenderPresent(renderer);
 }
 
 void fst_handle_event(State* state, SDL_Event* event)
 {
+  Button* manual = &((Data*)state->data)->manual;
+  Button* random = &((Data*)state->data)->random;
+  Next* next     = &((Data*)state->data)->next;
+
   if(event->type == SDL_MOUSEBUTTONDOWN)
   {
     Vec2i mouse_pos = vec2i(event->button.x, event->button.y);
-    if(button_isClick(&((Data*)state->data)->manual, mouse_pos))
-      ((Data*)state->data)->next = MANUAL;
-    else if(button_isClick(&((Data*)state->data)->random, mouse_pos))
-      ((Data*)state->data)->next = RANDOM;
+    if(button_isClick(manual, mouse_pos)) *next = MANUAL;
+    else if(button_isClick(random, mouse_pos)) *next = RANDOM;
   }
 }
 
 State* fst_update(State* state)
 {
-  if(((Data*)state->data)->next == MANUAL){
-    SDL_Renderer* renderer = ((Data*)state->data)->renderer;
-    Settings* settings = ((Data*)state->data)->settings;
+  SDL_Renderer* renderer  = ((Data*)state->data)->renderer;
+  Settings* settings      = ((Data*)state->data)->settings;
+  Next* next              = &((Data*)state->data)->next;
+
+  if(*next == MANUAL){
     State* new_state = new_configure_game_state(settings, renderer);
     delete_first_state(state);
     return new_state;
-  }else if(((Data*)state->data)->next == RANDOM){
-    ((Data*)state->data)->settings->MAP_SIZE = rand_range(MIN_MAP_SIZE, MAX_MAP_SIZE);
-    int map_size = ((Data*)state->data)->settings->MAP_SIZE;
-    int max_number_of_ships = (map_size * map_size) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH);
+  }else if(*next == RANDOM){
+    settings->MAP_SIZE = rand_range(MIN_MAP_SIZE, MAX_MAP_SIZE);
+    int max_number_of_ships = (settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH);
 
-    ((Data*)state->data)->settings->CELL_SIZE =
-    ((Data*)state->data)->settings->WINDOW_WIDTH < ((Data*)state->data)->settings->WINDOW_HEIGHT ?
-      ((Data*)state->data)->settings->WINDOW_WIDTH / ((Data*)state->data)->settings->MAP_SIZE :
-      ((Data*)state->data)->settings->WINDOW_HEIGHT / ((Data*)state->data)->settings->MAP_SIZE;
+    settings->CELL_SIZE = settings->WINDOW_WIDTH < settings->WINDOW_HEIGHT ?
+      settings->WINDOW_WIDTH / settings->MAP_SIZE : settings->WINDOW_HEIGHT / settings->MAP_SIZE;
 
     int count = 0;
     int value = rand_range(1, max_number_of_ships/5);
-    for(int i = 0; i < value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = F;
+    for(int i = 0; i < value; ++i, ++count) settings->ships[count] = F;
 
     value = rand_range(1, max_number_of_ships/5);
-    for(int i = 0; i < value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = I;
+    for(int i = 0; i < value; ++i, ++count) settings->ships[count] = I;
 
     value = rand_range(1, max_number_of_ships/5);
-    for(int i = 0; i < value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = Z;
+    for(int i = 0; i < value; ++i, ++count) settings->ships[count] = Z;
 
     value = rand_range(1, max_number_of_ships/5);
-    for(int i = 0; i < value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = H;
+    for(int i = 0; i < value; ++i, ++count) settings->ships[count] = H;
 
     value = rand_range(1, max_number_of_ships/5);
-    for(int i = 0; i < value; ++i, ++count)
-      ((Data*)state->data)->settings->ships[count] = P;
+    for(int i = 0; i < value; ++i, ++count) settings->ships[count] = P;
 
-    ((Data*)state->data)->settings->NUM_OF_SHIPS = count;
+    settings->NUM_OF_SHIPS = count;
 
-    SDL_Renderer* renderer = ((Data*)state->data)->renderer;
-    Settings* settings = ((Data*)state->data)->settings;
     Game* game = new_game(settings);
     State* new_state = new_placing_ships_state(settings, game, renderer);
     delete_first_state(state);

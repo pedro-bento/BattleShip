@@ -8,6 +8,7 @@
 #include "../config.h"
 #include "../physics/game.h"
 
+// returns a heap allocated state
 State* new_fight_state(Game* game, Settings* settings, SDL_Renderer* renderer);
 
 #endif

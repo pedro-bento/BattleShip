@@ -26,10 +26,10 @@ State* new_results_state(Game* game, Settings* settings, SDL_Renderer* renderer)
   Data* data = malloc(sizeof(Data));
   LOG_FAIL(data);
 
-  data->renderer = renderer;
-  data->settings = settings;
-  data->game = game;
-  data->isContinue = false;
+  data->renderer    = renderer;
+  data->settings    = settings;
+  data->game        = game;
+  data->isContinue  = false;
 
   data->p1 = text(
     vec2i(settings->WINDOW_WIDTH * 0.25, settings->WINDOW_HEIGHT * 0.1),
@@ -46,37 +46,45 @@ State* new_results_state(Game* game, Settings* settings, SDL_Renderer* renderer)
     settings->WINDOW_WIDTH * 0.3, settings->WINDOW_HEIGHT * 0.08, 5,
     "Quit", settings->font_big, COLOR_BLACK, COLOR_RADIOACTIVE_GREEN, renderer);
 
-  state->data = data;
-  state->render = r_render;
+  state->data         = data;
+  state->render       = r_render;
   state->handle_event = r_handle_event;
-  state->update = r_update;
+  state->update       = r_update;
 
   return state;
 }
 
 void delete_results_state(State* state)
 {
-  delete_text(&((Data*)state->data)->p1);
-  delete_text(&((Data*)state->data)->p2);
-  delete_button(&((Data*)state->data)->quit);
-  SDL_DestroyRenderer(((Data*)state->data)->renderer);
-  delete_game(((Data*)state->data)->game);
+  Text* text_player1      = &((Data*)state->data)->p1;
+  Text* text_player2      = &((Data*)state->data)->p2;
+  Button* button_quit     = &((Data*)state->data)->quit;
+  SDL_Renderer* renderer  = ((Data*)state->data)->renderer;
+  Game* game              = ((Data*)state->data)->game;
+
+  delete_text(text_player1);
+  delete_text(text_player2);
+  delete_button(button_quit);
+  SDL_DestroyRenderer(renderer);
+  delete_game(game);
   free(state->data);
   free(state);
 }
 
 void r_render(State* state, SDL_Renderer* renderer)
 {
-  Settings* settings = ((Data*)state->data)->settings;
-  Game* game = ((Data*)state->data)->game;
+  Text* text_player1  = &((Data*)state->data)->p1;
+  Text* text_player2  = &((Data*)state->data)->p2;
+  Button* button_quit = &((Data*)state->data)->quit;
+  Settings* settings  = ((Data*)state->data)->settings;
+  Game* game          = ((Data*)state->data)->game;
 
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  render_text(&((Data*)state->data)->p1, renderer);
-  render_text(&((Data*)state->data)->p2, renderer);
-  render_button(&((Data*)state->data)->quit, renderer);
-
+  render_text(text_player1, renderer);
+  render_text(text_player2, renderer);
+  render_button(button_quit, renderer);
   render_final(game, renderer, settings);
 
   SDL_RenderPresent(renderer);
@@ -84,17 +92,22 @@ void r_render(State* state, SDL_Renderer* renderer)
 
 void r_handle_event(State* state, SDL_Event* event)
 {
+  Button* button_quit = &((Data*)state->data)->quit;
+  bool* isContinue    = &((Data*)state->data)->isContinue;
+
   if(event->type == SDL_MOUSEBUTTONDOWN)
   {
     Vec2i mouse_pos = vec2i(event->button.x, event->button.y);
-    if(button_isClick(&((Data*)state->data)->quit, mouse_pos))
-      ((Data*)state->data)->isContinue = true;
+    if(button_isClick(button_quit, mouse_pos))
+      *isContinue = true;
   }
 }
 
 State* r_update(State* state)
 {
-  if(((Data*)state->data)->isContinue == true){
+  bool isContinue    = ((Data*)state->data)->isContinue;
+
+  if(isContinue == true){
     delete_results_state(state);
     return NULL;
   }
