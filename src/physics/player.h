@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 #include "ship.h"
+#include "../system/quadtree.h"
 
 // ShotState
 // combination of typedef and enum
@@ -26,13 +27,16 @@ typedef struct
   ShotState shot_state;
 } Cell;
 
+Cell* new_cell();
+void delete_cell(Cell* cell);
+
 // Player
 // represents a player
 // stores the player hp and a map (matrix of cells)
 typedef struct
 {
   int hp;
-  Cell** map;
+  QT* map;
 } Player;
 
 // new_player

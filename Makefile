@@ -1,11 +1,12 @@
 PKGS = sdl2 SDL2_ttf
 CC = gcc
 CFLAGS = -std=c99 -Wall -O2 $(shell pkg-config --cflags $(PKGS))
-LIBS = $(shell pkg-config --libs $(PKGS))
+LIBS = -lm $(shell pkg-config --libs $(PKGS))
 
 FILES =\
 	src/main.c\
 	src/system/log.c\
+	src/system/quadtree.c\
 	src/physics/ship.c\
 	src/physics/player.c\
 	src/physics/game.c\

@@ -3,14 +3,14 @@
 #include <math.h>
 
 #include "quadtree.h"
-#include "system/stacktrace.h"
+#include "../system/log.h"
 
-int  qt_inBoundary(QT* qt, Vec2 p);
+int  qt_inBoundary(QT* qt, Vec2i p);
 
-QT_Node* qt_node_create(Vec2 pos, void* data)
+QT_Node* qt_node_create(Vec2i pos, void* data)
 {
   QT_Node* node = malloc(sizeof(QT_Node));
-  trace_assert(node);
+  LOG_FAIL(node);
   node->pos = pos;
   node->data = data;
   return node;
@@ -21,10 +21,10 @@ void qt_node_destroy(QT_Node* node)
   free(node);
 }
 
-QT* qt_create(Vec2 top_left, Vec2 bottom_right)
+QT* qt_create(Vec2i top_left, Vec2i bottom_right)
 {
   QT* qt = malloc(sizeof(QT));
-  trace_assert(qt);
+  LOG_FAIL(qt);
   qt->t_left = NULL;
   qt->t_right = NULL;
   qt->b_left = NULL;
@@ -78,7 +78,7 @@ void qt_insert(QT* qt, QT_Node* node)
       if(qt->t_left == NULL)
       {
         qt->t_left = qt_create(qt->top_left,
-          vec2((qt->top_left.x + qt->bottom_right.x) / 2,
+          vec2i((qt->top_left.x + qt->bottom_right.x) / 2,
                (qt->top_left.y + qt->bottom_right.y) / 2));
       }
       qt_insert(qt->t_left, node);
@@ -90,8 +90,8 @@ void qt_insert(QT* qt, QT_Node* node)
       if(qt->b_left == NULL)
       {
         qt->b_left = qt_create(
-          vec2(qt->top_left.x, (qt->top_left.y + qt->bottom_right.y) / 2),
-          vec2((qt->top_left.x + qt->bottom_right.x) / 2, qt->bottom_right.y));
+          vec2i(qt->top_left.x, (qt->top_left.y + qt->bottom_right.y) / 2),
+          vec2i((qt->top_left.x + qt->bottom_right.x) / 2, qt->bottom_right.y));
       }
       qt_insert(qt->b_left, node);
     }
@@ -105,8 +105,8 @@ void qt_insert(QT* qt, QT_Node* node)
       if(qt->t_right == NULL)
       {
         qt->t_right = qt_create(
-          vec2((qt->top_left.x + qt->bottom_right.x) / 2, qt->top_left.y),
-          vec2(qt->bottom_right.x, (qt->top_left.y + qt->bottom_right.y) / 2));
+          vec2i((qt->top_left.x + qt->bottom_right.x) / 2, qt->top_left.y),
+          vec2i(qt->bottom_right.x, (qt->top_left.y + qt->bottom_right.y) / 2));
       }
       qt_insert(qt->t_right, node);
     }
@@ -117,7 +117,7 @@ void qt_insert(QT* qt, QT_Node* node)
       if(qt->b_right == NULL)
       {
         qt->b_right = qt_create(
-          vec2((qt->top_left.x + qt->bottom_right.x) / 2,
+          vec2i((qt->top_left.x + qt->bottom_right.x) / 2,
                (qt->top_left.y + qt->bottom_right.y) / 2),
           qt->bottom_right);
       }
@@ -126,7 +126,7 @@ void qt_insert(QT* qt, QT_Node* node)
   }
 }
 
-QT_Node* qt_find(QT* qt, Vec2 pos)
+QT_Node* qt_find(QT* qt, Vec2i pos)
 {
   if(!qt_inBoundary(qt, pos)) return NULL;
   if(qt->node != NULL) return qt->node;
@@ -172,7 +172,7 @@ QT_Node* qt_find(QT* qt, Vec2 pos)
   return NULL;
 }
 
-int  qt_inBoundary(QT* qt, Vec2 p)
+int  qt_inBoundary(QT* qt, Vec2i p)
 {
   return p.x >= qt->top_left.x && p.x <= qt->bottom_right.x
       && p.y >= qt->top_left.y && p.y <= qt->bottom_right.y;

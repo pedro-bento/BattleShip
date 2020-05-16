@@ -2,6 +2,7 @@
 #include "color.h"
 #include "../config.h"
 #include "../system/log.h"
+#include "../system/quadtree.h"
 #include "../math/vec.h"
 #include "../math/math.h"
 #include "../physics/ship.h"
@@ -120,14 +121,17 @@ void render_player0(Player* player, SDL_Renderer* renderer, Settings* settings, 
   {
     for(size_t y = 0; y < settings->MAP_SIZE; y++)
     {
-      if(player->map[x][y].ship != NULL)
+      QT_Node* node = qt_find(player->map, vec2i(x,y));
+      if(node == NULL) continue;
+      Cell* cell = (Cell*)node->data;
+      if(cell->ship == NULL) continue;
+      Ship* ship = cell->ship;
+
+      if(not_rendered(ship, rendered, rendered_count))
       {
-        if(not_rendered(player->map[x][y].ship, rendered, rendered_count))
-        {
-          rendered[rendered_count] = player->map[x][y].ship;
-          rendered_count++;
-          render_ship(player->map[x][y].ship, renderer, settings, false, scale, xOffset, yOffset);
-        }
+        rendered[rendered_count] = ship;
+        rendered_count++;
+        render_ship(ship, renderer, settings, false, scale, xOffset, yOffset);
       }
     }
   }
@@ -138,41 +142,51 @@ void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
   render_player0(player, renderer, settings, 1, 0, 0);
 }
 
-void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
+void quadtree_collect_shot_state(QT* qt, Settings* settings, SDL_Rect cells_hit[], size_t* count_hit, SDL_Rect cells_miss[], size_t* count_miss)
 {
+  if(qt == NULL) return;
+  quadtree_collect_shot_state(qt->t_left, settings, cells_hit, count_hit, cells_miss, count_miss);
+  quadtree_collect_shot_state(qt->t_right, settings, cells_hit, count_hit, cells_miss, count_miss);
+  quadtree_collect_shot_state(qt->b_left, settings, cells_hit, count_hit, cells_miss, count_miss);
+  quadtree_collect_shot_state(qt->b_right, settings, cells_hit, count_hit, cells_miss, count_miss);
+  if(qt->node == NULL) return;
+
+  SHOT_STATE shot_state = ((Cell*)(qt->node->data))->shot_state;
+
   size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
   size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
   size_t map_offset = (max - min) / 2;
 
+  switch(shot_state)
+  {
+    case SHOT_STATE_HIT :{
+      cells_hit[*count_hit].x = map_offset + qt->node->pos.y * settings->CELL_SIZE;
+      cells_hit[*count_hit].y = qt->node->pos.x * settings->CELL_SIZE;
+      cells_hit[*count_hit].w = cells_hit[*count_hit].h = settings->CELL_SIZE;
+      *count_hit += 1;
+    } break;
+
+    case SHOT_STATE_MISS :{
+      cells_miss[*count_miss].x = map_offset + qt->node->pos.y * settings->CELL_SIZE;
+      cells_miss[*count_miss].y = qt->node->pos.x * settings->CELL_SIZE;
+      cells_miss[*count_miss].w = cells_miss[*count_miss].h = settings->CELL_SIZE;
+      *count_miss += 1;
+    } break;
+
+    default : break;
+  }
+}
+
+void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
+{
   size_t max_size = settings->MAP_SIZE * settings->MAP_SIZE;
   SDL_Rect cells_hit[max_size];
   SDL_Rect cells_miss[max_size];
 
-  size_t count_hit  = 0;
-  size_t count_miss  = 0;
+  size_t count_hit = 0;
+  size_t count_miss = 0;
 
-  for(int x = 0; x < settings->MAP_SIZE; ++x)
-  {
-    for(int y = 0; y < settings->MAP_SIZE; ++y)
-    {
-      switch(player->map[x][y].shot_state)
-      {
-        case SHOT_STATE_HIT :{
-          cells_hit[count_hit].x = map_offset + y * settings->CELL_SIZE;
-          cells_hit[count_hit].y = x * settings->CELL_SIZE;
-          cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE;
-          ++count_hit;
-        } break;
-
-        case SHOT_STATE_MISS :{
-          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE;
-          cells_miss[count_miss].y = x * settings->CELL_SIZE;
-          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE;
-          ++count_miss;
-        } break;
-      }
-    }
-  }
+  quadtree_collect_shot_state(player->map, settings, cells_hit, &count_hit, cells_miss, &count_miss);
 
   render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED_A, renderer);
   render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);

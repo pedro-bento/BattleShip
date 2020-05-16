@@ -18,6 +18,7 @@ typedef struct
   int current_player_id;
   int current_ship_count;
   Button random;
+  bool random_pressed;
   bool no_ship_preview;
 } Data;
 
@@ -38,6 +39,7 @@ State* new_placing_ships_state(Settings* settings, Game* game, SDL_Renderer* ren
   data->ship                = new_ship(settings->ships[0]);
   data->current_player_id   = 1;
   data->current_ship_count  = 0;
+  data->random_pressed      = false;
   data->no_ship_preview     = false;
 
   data->random = button(
@@ -91,6 +93,7 @@ void ps_handle_event(State* state, SDL_Event* event)
   int* current_ship_count = &((Data*)state->data)->current_ship_count;
   int* current_player_id  = &((Data*)state->data)->current_player_id;
   Button* button_random   = &((Data*)state->data)->random;
+  bool* random_pressed    = &((Data*)state->data)->random_pressed;
   bool* no_ship_preview   = &((Data*)state->data)->no_ship_preview;
   SDL_Renderer* renderer  = ((Data*)state->data)->renderer;
 
@@ -98,8 +101,10 @@ void ps_handle_event(State* state, SDL_Event* event)
   {
     case SDL_MOUSEBUTTONDOWN :{
       Vec2i mouse_pos = vec2i(event->button.x, event->button.y);
-      if(button_isClick(button_random, mouse_pos))
+      if(!(*random_pressed) && button_isClick(button_random, mouse_pos))
       {
+        *random_pressed = true;
+
         Vec2i dxy;
         while(*current_ship_count < settings->NUM_OF_SHIPS)
         {
@@ -128,8 +133,15 @@ void ps_handle_event(State* state, SDL_Event* event)
         *current_ship_count = 0;
 
         delete_ship(ship);
-        ((Data*)state->data)->ship = new_ship(settings->ships[*current_ship_count]);
 
+        if(*current_player_id > 2)
+        {
+          return;
+        }
+
+        ((Data*)state->data)->ship = new_ship(settings->ships[*current_ship_count]);
+        *random_pressed = false;
+        
         return;
       }
     } break;

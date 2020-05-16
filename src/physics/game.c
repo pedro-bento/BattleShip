@@ -66,7 +66,22 @@ bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
       {
         ShipState player_ship_state = player_get_ship_state(player, vec2i(x, y));
         if(!(player_ship_state == SHIP_STATE_GOOD || player_ship_state == SHIP_STATE_HIT))
-          player->map[x][y].ship = ship;
+        {
+          QT_Node* node = qt_find(player->map, vec2i(x,y));
+          if(node == NULL){
+            Cell* cell = new_cell();
+            cell->ship = ship;
+            qt_insert(player->map, qt_node_create(vec2i(x,y), (void*)cell));
+          }else if((Cell*)node->data == NULL){
+            Cell* cell = new_cell();
+            cell->ship = ship;
+            node->data = (void*)cell;
+          }else{
+            Cell* cell = (Cell*)node->data;
+            cell->ship = ship;
+            node->data = (void*)cell;
+          }
+        }
       }
     }
   }
@@ -82,7 +97,21 @@ void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
   ShotState shot_state = player_register_shot(opponent, shot);
 
   Player* player = game_get_player_by_id(game, id);
-  player->map[shot.x][shot.y].shot_state = shot_state;
+
+  QT_Node* node = qt_find(player->map, shot);
+  if(node == NULL){
+    Cell* cell = new_cell();
+    cell->shot_state = shot_state;
+    qt_insert(player->map, qt_node_create(shot, (void*)cell));
+  }else if((Cell*)node->data == NULL){
+    Cell* cell = new_cell();
+    cell->shot_state = shot_state;
+    node->data = (void*)cell;
+  }else{
+    Cell* cell = (Cell*)node->data;
+    cell->shot_state = shot_state;
+    node->data = (void*)cell;
+  }
 }
 
 bool game_is_over(Game* game)
