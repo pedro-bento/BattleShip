@@ -36,7 +36,11 @@ void delete_cell(Cell* cell);
 typedef struct
 {
   int hp;
+#ifdef A
+  Cell** map;
+#else
   QT* map;
+#endif
 } Player;
 
 // new_player

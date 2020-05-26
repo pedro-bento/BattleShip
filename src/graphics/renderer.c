@@ -112,6 +112,32 @@ bool not_rendered(Ship* eval, Ship* rendered[], int rendered_count)
   return true;
 }
 
+#ifdef A
+
+void render_player0(Player* player, SDL_Renderer* renderer, Settings* settings, float scale, int xOffset, int yOffset)
+{
+  Ship* rendered[(settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
+  int rendered_count = 0;
+
+  for(size_t x = 0; x < settings->MAP_SIZE; x++)
+  {
+    for(size_t y = 0; y < settings->MAP_SIZE; y++)
+    {
+      if(player->map[x][y].ship != NULL)
+      {
+        if(not_rendered(player->map[x][y].ship, rendered, rendered_count))
+        {
+          rendered[rendered_count] = player->map[x][y].ship;
+          rendered_count++;
+          render_ship(player->map[x][y].ship, renderer, settings, false, scale, xOffset, yOffset);
+        }
+      }
+    }
+  }
+}
+
+#else
+
 void render_player0(Player* player, SDL_Renderer* renderer, Settings* settings, float scale, int xOffset, int yOffset)
 {
   Ship* rendered[(settings->MAP_SIZE * settings->MAP_SIZE) / (MAX_SHIP_WIDTH * MAX_SHIP_WIDTH)];
@@ -137,10 +163,56 @@ void render_player0(Player* player, SDL_Renderer* renderer, Settings* settings, 
   }
 }
 
+#endif
+
 void render_player(Player* player, SDL_Renderer* renderer, Settings* settings)
 {
   render_player0(player, renderer, settings, 1, 0, 0);
 }
+
+#ifdef A
+
+void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
+{
+  size_t min = MIN(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t max = MAX(settings->WINDOW_WIDTH, settings->WINDOW_HEIGHT);
+  size_t map_offset = (max - min) / 2;
+
+  size_t max_size = settings->MAP_SIZE * settings->MAP_SIZE;
+  SDL_Rect cells_hit[max_size];
+  SDL_Rect cells_miss[max_size];
+
+  size_t count_hit  = 0;
+  size_t count_miss  = 0;
+
+  for(int x = 0; x < settings->MAP_SIZE; ++x)
+  {
+    for(int y = 0; y < settings->MAP_SIZE; ++y)
+    {
+      switch(player->map[x][y].shot_state)
+      {
+        case SHOT_STATE_HIT :{
+          cells_hit[count_hit].x = map_offset + y * settings->CELL_SIZE;
+          cells_hit[count_hit].y = x * settings->CELL_SIZE;
+          cells_hit[count_hit].w = cells_hit[count_hit].h = settings->CELL_SIZE;
+          ++count_hit;
+        } break;
+
+        case SHOT_STATE_MISS :{
+          cells_miss[count_miss].x = map_offset + y * settings->CELL_SIZE;
+          cells_miss[count_miss].y = x * settings->CELL_SIZE;
+          cells_miss[count_miss].w = cells_miss[count_miss].h = settings->CELL_SIZE;
+          ++count_miss;
+        } break;
+      }
+    }
+  }
+
+  render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED_A, renderer);
+  render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);
+}
+
+#else
 
 void quadtree_collect_shot_state(QT* qt, Settings* settings, SDL_Rect cells_hit[], size_t* count_hit, SDL_Rect cells_miss[], size_t* count_miss)
 {
@@ -191,6 +263,8 @@ void render_opponent(Player* player, SDL_Renderer* renderer, Settings* settings)
   render_rects(cells_hit, count_hit, COLOR_CRIMSON_RED_A, renderer);
   render_rects(cells_miss, count_miss, COLOR_SAINT_PATRICK_BLUE_A, renderer);
 }
+
+#endif
 
 void render_grid0(SDL_Renderer* renderer, Settings* settings, float scale, int xOffset, int yOffset)
 {

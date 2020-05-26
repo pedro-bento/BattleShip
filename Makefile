@@ -4,7 +4,6 @@ CFLAGS = -std=c99 -Wall -O2 $(shell pkg-config --cflags $(PKGS))
 LIBS = -lm $(shell pkg-config --libs $(PKGS))
 
 FILES =\
-	src/main.c\
 	src/system/log.c\
 	src/system/quadtree.c\
 	src/physics/ship.c\
@@ -20,4 +19,7 @@ FILES =\
 	src/states/results.c\
 
 battleship: $(FILES)
-	$(CC) $(CFLAGS) -o battleship $(FILES) $(LIBS)
+	$(CC) $(CFLAGS) -o battleship src/main.c $(FILES) $(LIBS)
+
+battleship_a: $(FILES)
+	$(CC) $(CFLAGS) -o battleship_a src/maina.c $(FILES) $(LIBS)

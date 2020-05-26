@@ -52,6 +52,34 @@ bool game_is_valid_ship(Game* game, Ship* ship, PlayerID id, bool ignore_ships)
   return true;
 }
 
+#ifdef A
+
+bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
+{
+  if(!game_is_valid_ship(game, ship, id, false))
+    return false;
+
+  Player* player = game_get_player_by_id(game, id);
+  for(int x = ship->top_left.x; x <= ship->bottom_right.x; ++x)
+  {
+    for(int y = ship->top_left.y; y <= ship->bottom_right.y; ++y)
+    {
+      if(x >= 0 && y >= 0 && x < game->settings->MAP_SIZE && y < game->settings->MAP_SIZE)
+      {
+        ShipState player_ship_state = player_get_ship_state(player, vec2i(x, y));
+        if(!(player_ship_state == SHIP_STATE_GOOD || player_ship_state == SHIP_STATE_HIT))
+          player->map[x][y].ship = ship;
+      }
+    }
+  }
+
+  player->hp += ship->area;
+
+  return true;
+}
+
+#else
+
 bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
 {
   if(!game_is_valid_ship(game, ship, id, false))
@@ -91,6 +119,21 @@ bool game_player_place_ship(Game* game, Ship* ship, PlayerID id)
   return true;
 }
 
+#endif
+
+#ifdef A
+
+void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
+{
+  Player* opponent = game_get_player_by_id(game, flip_player_id(id));
+  ShotState shot_state = player_register_shot(opponent, shot);
+
+  Player* player = game_get_player_by_id(game, id);
+  player->map[shot.x][shot.y].shot_state = shot_state;
+}
+
+#else
+
 void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
 {
   Player* opponent = game_get_player_by_id(game, flip_player_id(id));
@@ -113,6 +156,8 @@ void game_player_shoot(Game* game, Vec2i shot, PlayerID id)
     node->data = (void*)cell;
   }
 }
+
+#endif
 
 bool game_is_over(Game* game)
 {
